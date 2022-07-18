@@ -4,25 +4,26 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 
-namespace MultiServer
+namespace Server
 {
-    class Program
+    public class Program
     {
+        
         private static readonly Socket serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
         private static readonly List<Socket> clientSockets = new List<Socket>();
         private const int BUFFER_SIZE = 2048;
         private const int PORT = 100;
         private static readonly byte[] buffer = new byte[BUFFER_SIZE];
 
-        static void Main()
+        public static void ServerC()
         {
             Console.Title = "Server";
             SetupServer();
-            Console.ReadLine(); // enter close
+            Console.ReadLine(); 
             CloseAllSockets();
         }
 
-        private static void SetupServer()//inicjacja serwera
+        public static void SetupServer()//inicjacja serwera
         {
             Console.WriteLine("Konfiguracja servera...");
             serverSocket.Bind(new IPEndPoint(IPAddress.Any, PORT));
@@ -31,7 +32,7 @@ namespace MultiServer
             Console.WriteLine("Server skonfigurowany pomyślnie");
         }
 
-        private static void CloseAllSockets()//wylaczenie socketow
+        public static void CloseAllSockets()//wylaczenie socketow
         {
             foreach (Socket socket in clientSockets)
             {
@@ -42,7 +43,7 @@ namespace MultiServer
             serverSocket.Close();
         }
 
-        private static void AcceptCallback(IAsyncResult AR)//akceptacja polaczenia od klienta
+        public static void AcceptCallback(IAsyncResult AR)//akceptacja polaczenia od klienta
         {
             Socket socket;
 
@@ -61,7 +62,7 @@ namespace MultiServer
             serverSocket.BeginAccept(AcceptCallback, null);
         }
 
-        private static void ReceiveCallback(IAsyncResult AR)//otrzymywanie wiadomosci
+        public static void ReceiveCallback(IAsyncResult AR)//otrzymywanie wiadomosci
         {
             Socket current = (Socket)AR.AsyncState;
             int received;
