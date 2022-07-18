@@ -19,17 +19,17 @@ namespace Client
             if (Getmail == "kacper.pl")//Adminowanie grą
             {
                 Console.Clear();
-                Console.WriteLine("Witamy ScrumMastera");
+                Console.WriteLine("Witamy ScrumMastera!");
             }
             else if (Getmail == "sebastian.pl")//Oglądanie gry
             {
                 Console.Clear();
-                Console.WriteLine("Witamy ProductOwnera");
+                Console.WriteLine("Witamy ProductOwnera!");
             }
             else//Granie w grę
             {
                 Console.Clear();
-                Console.WriteLine("Witamy Programistę");
+                Console.WriteLine("Witamy Programistę!");
             }
 
         }
