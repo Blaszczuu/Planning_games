@@ -1,14 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-
-namespace Server
+namespace Client
 {
-    class Menu : Program
+    public class Menu 
     {
         private static List<string> items = new List<string>();
 
-        static void Main(string[] args)
+        public static void MainM()
         {
             Console.Title = "ServerMenu";
             bool showMenu = true;
@@ -24,8 +26,7 @@ namespace Server
             Console.WriteLine("Wybierz opcje:");
             Console.WriteLine("1) Dodaj temat");
             Console.WriteLine("2) Wyświetl dodane tematy");
-            Console.WriteLine("3) Uruchom Server");
-            Console.WriteLine("4) Wyjdź z Aplikacji");
+            Console.WriteLine("3) Wyjdź z Aplikacji");
             Console.Write("\r\nWybierz opcje: ");
 
             switch (Console.ReadLine())
@@ -38,15 +39,8 @@ namespace Server
                     Console.ReadKey();
                     return true;
                 case "3":
-                    Console.WriteLine("\n");
-                    ServerC();
-                    return true;
-                case "4":
                     return false;
                 default:
-                    return true;
-                case "5":
-                    // miejsce na wybór talii
                     return true;
             }
         }

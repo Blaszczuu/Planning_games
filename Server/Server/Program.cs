@@ -15,7 +15,7 @@ namespace Server
         private const int PORT = 100;
         private static readonly byte[] buffer = new byte[BUFFER_SIZE];
 
-        public static void ServerC()
+        public static void Main()
         {
             Console.Title = "Server";
             SetupServer();
