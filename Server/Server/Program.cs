@@ -89,7 +89,7 @@ namespace Server
                 current.Shutdown(SocketShutdown.Both);
                 current.Close();
                 clientSockets.Remove(current);
-                Console.WriteLine("Client disconnected");
+                Console.WriteLine("Klient rozłączył się");
                 return;
             }
 
