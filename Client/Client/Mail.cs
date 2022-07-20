@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Client
 {
-    public class Mail : Menu
+    public class Mail : Menu 
     {
         static void MailCheck()
         {
@@ -22,6 +22,7 @@ namespace Client
                 Console.Clear();
                 Console.WriteLine("Witamy ScrumMastera");
                 MainM();
+                
             }
             else if (Getmail == "sebastian.pl")//Oglądanie gry
             {
@@ -32,6 +33,7 @@ namespace Client
             {
                 Console.Clear();
                 Console.WriteLine("Witamy Programistę");
+                //RequestLoop();
             }
 
         }

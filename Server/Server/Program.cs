@@ -17,7 +17,7 @@ namespace Server
 
         public static void Main()
         {
-            Console.Title = "Server";
+            Console.Title = "Server: " + Dns.GetHostEntry(Dns.GetHostName()).AddressList.First(a => a.AddressFamily == AddressFamily.InterNetwork);
             SetupServer();
             Console.ReadLine(); 
             CloseAllSockets();

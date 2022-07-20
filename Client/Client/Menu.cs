@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Client
 {
-    public class Menu 
+    public class Menu : Talia
     {
         private static List<string> items = new List<string>();
 
@@ -26,7 +26,8 @@ namespace Client
             Console.WriteLine("Wybierz opcje:");
             Console.WriteLine("1) Dodaj temat");
             Console.WriteLine("2) Wyświetl dodane tematy");
-            Console.WriteLine("3) Wyjdź z Aplikacji");
+            Console.WriteLine("3) Wyświetl listę dodanych Talii");
+            Console.WriteLine("4) Wyjdź z Aplikacji");
             Console.Write("\r\nWybierz opcje: ");
 
             switch (Console.ReadLine())
@@ -39,6 +40,10 @@ namespace Client
                     Console.ReadKey();
                     return true;
                 case "3":
+                    Console.Clear();
+                    Talie();
+                    return true;
+                case "4":
                     return false;
                 default:
                     return true;
@@ -53,7 +58,6 @@ namespace Client
 
         private static void GameAdd()
         {
-            Console.Clear();
             Console.WriteLine("Rozgrywka: ");
             items.Add(CaptureInput());
             //DisplayResult(CaptureInput());
@@ -77,6 +81,7 @@ namespace Client
             Console.Write("\r\nNaciśnij enter aby wrócić do menu");
             Console.ReadLine();
         }
+
 
 
     }
