@@ -3,7 +3,7 @@ using System.Text;
 
 namespace Client
 {
-    class ClientApp : Mail
+    class ClientApp 
     {
         private static readonly Socket ClientSocket = new Socket
             (AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
@@ -14,9 +14,8 @@ namespace Client
         {
             Console.Title = "Client";
             ConnectToServer();
-            EmailCheck();
             RequestLoop();
-            Exit();
+            
         }
 
         private static void ConnectToServer()//łączenie z serwerem
@@ -50,8 +49,10 @@ namespace Client
 
             while (true)
             {
-                SendText();
-                //ReceiveResponse();
+                SendMessage();
+                Console.Clear();
+                ReceiveResponse();
+                
             }
         }
 
@@ -63,10 +64,10 @@ namespace Client
             Environment.Exit(0);
         }
 
-        private static void SendText()//wysyłanie
+        private static void SendMessage()//wysyłanie
         {
-            Console.Write("Wybierz kartę: ");
-            string request = Console.ReadLine();
+             Console.Write("Wybierz kartę: ");
+             string request = Console.ReadLine();
             SendString(request);
 
             if (request.ToLower() == "stop")
@@ -84,7 +85,7 @@ namespace Client
             ClientSocket.Send(buffer, 0, buffer.Length, SocketFlags.None);
         }
 
-        private static void ReceiveResponse()//głos na rundę
+        private static void ReceiveResponse()//mail
         {
             var buffer = new byte[2048];
             int received = ClientSocket.Receive(buffer, SocketFlags.None);

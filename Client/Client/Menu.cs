@@ -9,24 +9,24 @@ namespace Client
     public class Menu : Talia
     {
         private static List<string> items = new List<string>();
-
+        private static TaliaXyz talieKart = new TaliaXyz();
         public static void MainM()
         {
             Console.Title = "ServerMenu";
             bool showMenu = true;
             while (showMenu)
             {
-                showMenu = MainMenu();
+               MainMenu();
             }
 
         }
-        private static bool MainMenu()
+        private static void MainMenu()
         {
             Console.Clear();
             Console.WriteLine("Wybierz opcje:");
             Console.WriteLine("1) Dodaj temat");
             Console.WriteLine("2) Wyświetl dodane tematy");
-            Console.WriteLine("3) Wyświetl listę dodanych Talii");
+            Console.WriteLine("3) Wybierz talie");
             Console.WriteLine("4) Wyjdź z Aplikacji");
             Console.Write("\r\nWybierz opcje: ");
 
@@ -34,19 +34,25 @@ namespace Client
             {
                 case "1":
                     GameAdd();
-                    return true;
+                    break;
                 case "2":
                     ShowID();
                     Console.ReadKey();
-                    return true;
+                    break;
                 case "3":
                     Console.Clear();
-                    Talie();
-                    return true;
+                    var talia = talieKart.GetDostepneTalieKart();
+                    for (int i = 0; i < talia.Count; i++)
+                    {
+                        Console.WriteLine(i+1 + ") " + talia[i]);
+                    }
+                    Console.ReadKey();
+                    break;
                 case "4":
-                    return false;
+                    // Exit();
+                    return;
                 default:
-                    return true;
+                    break;
             }
         }
 

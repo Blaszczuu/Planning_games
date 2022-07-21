@@ -13,7 +13,7 @@ namespace Server
         private static readonly List<Socket> clientSockets = new List<Socket>();
         private const int BUFFER_SIZE = 2048;
         private const int PORT = 100;
-        private static readonly byte[] buffer = new byte[BUFFER_SIZE];
+        public static readonly byte[] buffer = new byte[BUFFER_SIZE];
 
         public static void Main()
         {
@@ -84,6 +84,7 @@ namespace Server
             string text = Encoding.ASCII.GetString(recBuf);
             Console.WriteLine("Otrzymany tekst: " + text);
 
+
             if (text.ToLower() == "stop") // klient wyszedł poprawnie
             {
                 current.Shutdown(SocketShutdown.Both);
@@ -92,9 +93,23 @@ namespace Server
                 Console.WriteLine("Klient rozłączył się");
                 return;
             }
-
+            if (text.ToLower() == "kacper.pl")
+            {
+                byte[] data = Encoding.ASCII.GetBytes("Witamy ScrumMastera");
+                current.Send(data);
+            }
+            if (text.ToLower() == "sebastian.pl")
+            {
+                byte[] data = Encoding.ASCII.GetBytes("Witamy ProductOwnera");
+                current.Send(data);
+            }
+            if (text.ToLower() == "michal.pl")
+            {
+                byte[] data = Encoding.ASCII.GetBytes("Witamy Developera");
+                current.Send(data);
+            }
             current.BeginReceive(buffer, 0, BUFFER_SIZE, SocketFlags.None, ReceiveCallback, current);
         }
-            
+
     }
 }
