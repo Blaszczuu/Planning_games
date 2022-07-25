@@ -1,5 +1,6 @@
 ﻿using System.Net.Sockets;
 using System.Text;
+using System.ComponentModel.DataAnnotations;
 
 namespace Client
 {
@@ -50,9 +51,11 @@ namespace Client
             while (true)
             {
                 SendMessage();
+                //IsValidEmail();
                 Console.Clear();
                 ReceiveResponse();
                 
+
             }
         }
 
@@ -66,33 +69,14 @@ namespace Client
 
         private static void SendMessage()//wysyłanie
         {
-             Console.Write("Podaj e-mail: ");
-             string request = Console.ReadLine();
+            Console.Write("Wyślij do servera: ");
+            string request = Console.ReadLine();
             SendString(request);
 
             if (request.ToLower() == "stop")
             {
                 Exit();
             }
-        }
-        private static void EmailValidation()//Wybór użytkownika
-        {
-            Console.Write("Podaj e-mail: ");
-            string request = Console.ReadLine();
-            SendString(request);
-
-            /*if (request.ToLower() == "kacper.pl")
-            {
-                MainM();
-            }
-            if (request.ToLower() == "sebastian.pl")
-            {
-
-            }
-            if (request.ToLower() == "michal.pl")
-            {
-
-            }*/
         }
 
         private static void SendString(string text)//wysyłanie
@@ -118,13 +102,14 @@ namespace Client
             }
             if (text == "Witamy ProductOwnera")
             {
-
+                Thread.Sleep(TimeSpan.FromSeconds(1));
             }
             if (text  == "Witamy Developera")
             {
-
+                Thread.Sleep(TimeSpan.FromSeconds(1));
             }
         }
+        
     }
     }
 

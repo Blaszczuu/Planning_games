@@ -136,21 +136,21 @@ namespace Server
                 Console.WriteLine("Klient rozłączył się, Adres Ip Klienta: "+IPAddress);
                 return;
             }
-            if (text.ToLower() == "kacper.pl")
+            if (text.ToLower() == "kacper@abb.pl")
             {
                 byte[] data = Encoding.ASCII.GetBytes("Witamy ScrumMastera");
                 current.Send(data);
             }
-            if (text.ToLower() == "sebastian.pl")
+            if (text.ToLower() == "sebastian@abb.pl")
             {
                 byte[] data = Encoding.ASCII.GetBytes("Witamy ProductOwnera");
                 current.Send(data);
             }
-            if (text.ToLower() == "michal.pl")
+            /*else
             {
                 byte[] data = Encoding.ASCII.GetBytes("Witamy Developera");
                 current.Send(data);
-            }
+            }*/
             current.BeginReceive(buffer, 0, BUFFER_SIZE, SocketFlags.None, ReceiveCallback, current);
         }
 
