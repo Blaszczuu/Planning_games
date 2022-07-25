@@ -35,7 +35,7 @@ namespace Client
 
         public List<string> GetTalia()
         {
-            return new List<string>() { "S", "M", "XL" };
+            return new List<string>() { "S", "M","L", "XL" };
         }
     }
 

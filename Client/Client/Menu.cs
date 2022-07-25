@@ -66,7 +66,6 @@ namespace Client
         {
             Console.WriteLine("Rozgrywka: ");
             items.Add(CaptureInput());
-            //DisplayResult(CaptureInput());
 
         }
 

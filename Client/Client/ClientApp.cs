@@ -3,7 +3,7 @@ using System.Text;
 
 namespace Client
 {
-    class ClientApp 
+    class ClientApp : Menu
     {
         private static readonly Socket ClientSocket = new Socket
             (AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
@@ -49,6 +49,7 @@ namespace Client
 
             while (true)
             {
+                //EmailValidation();
                 SendMessage();
                 Console.Clear();
                 ReceiveResponse();
@@ -66,7 +67,7 @@ namespace Client
 
         private static void SendMessage()//wysyłanie
         {
-             Console.Write("Wybierz kartę: ");
+             Console.Write("Wybierz Karte: ");
              string request = Console.ReadLine();
             SendString(request);
 
@@ -74,9 +75,25 @@ namespace Client
             {
                 Exit();
             }
+        }
+        private static void EmailValidation()//Wybór użytkownika
+        {
+            Console.Write("Podaj e-mail: ");
+            string request = Console.ReadLine();
+            SendString(request);
 
-        
+            if (request.ToLower() == "kacper.pl")
+            {
+                MainM();
+            }
+            if (request.ToLower() == "sebastian.pl")
+            {
 
+            }
+            if (request.ToLower() == "michal.pl")
+            {
+
+            }
         }
 
         private static void SendString(string text)//wysyłanie

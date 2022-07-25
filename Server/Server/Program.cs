@@ -42,10 +42,27 @@ namespace Server
 
             serverSocket.Close();
         }
-
+        public static void GetIP()
+        {
+            {
+                string IPAddress = "";
+                IPHostEntry Host = default(IPHostEntry);
+                string Hostname = null;
+                Hostname = System.Environment.MachineName;
+                Host = Dns.GetHostEntry(Hostname);
+                foreach (IPAddress IP in Host.AddressList)
+                {
+                    if (IP.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
+                    {
+                        IPAddress = Convert.ToString(IP);
+                    }
+                }
+            }
+        }
         public static void AcceptCallback(IAsyncResult AR)//akceptacja polaczenia od klienta
         {
             Socket socket;
+            string IPAddress = "";
 
             try
             {
@@ -55,10 +72,23 @@ namespace Server
             {
                 return;
             }
+            
+                IPHostEntry Host = default(IPHostEntry);
+                string Hostname = null;
+                Hostname = System.Environment.MachineName;
+                Host = Dns.GetHostEntry(Hostname);
+                foreach (IPAddress IP in Host.AddressList)
+                {
+                    if (IP.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
+                    {
+                        IPAddress = Convert.ToString(IP);
+                    }
+                }
+            
 
             clientSockets.Add(socket);
             socket.BeginReceive(buffer, 0, BUFFER_SIZE, SocketFlags.None, ReceiveCallback, socket);
-            Console.WriteLine("Klient połączony");
+            Console.WriteLine("Klient połączony, adres IP klienta: "+ IPAddress) ;
             serverSocket.BeginAccept(AcceptCallback, null);
         }
 
@@ -66,6 +96,7 @@ namespace Server
         {
             Socket current = (Socket)AR.AsyncState;
             int received;
+            string IPAddress = "";
 
             try
             {
@@ -84,13 +115,25 @@ namespace Server
             string text = Encoding.ASCII.GetString(recBuf);
             Console.WriteLine("Otrzymany tekst: " + text);
 
+            IPHostEntry Host = default(IPHostEntry);
+            string Hostname = null;
+            Hostname = System.Environment.MachineName;
+            Host = Dns.GetHostEntry(Hostname);
+            foreach (IPAddress IP in Host.AddressList)
+            {
+                if (IP.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
+                {
+                    IPAddress = Convert.ToString(IP);
+                }
+            }
+
 
             if (text.ToLower() == "stop") // klient wyszedł poprawnie
             {
                 current.Shutdown(SocketShutdown.Both);
                 current.Close();
                 clientSockets.Remove(current);
-                Console.WriteLine("Klient rozłączył się");
+                Console.WriteLine("Klient rozłączył się, Adres Ip Klienta: "+IPAddress);
                 return;
             }
             if (text.ToLower() == "kacper.pl")
