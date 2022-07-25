@@ -27,7 +27,6 @@ namespace Client
             Console.WriteLine("1) Dodaj temat");
             Console.WriteLine("2) Wyświetl dodane tematy");
             Console.WriteLine("3) Wybierz talie");
-            Console.WriteLine("4) Wyjdź z Aplikacji");
             Console.Write("\r\nWybierz opcje: ");
 
             switch (Console.ReadLine())
@@ -47,11 +46,6 @@ namespace Client
                         Console.WriteLine(i+1 + ") " + talia[i]);
                     }
                     Console.ReadKey();
-                    break;
-                case "4":
-                    // Exit();
-                    return;
-                default:
                     break;
             }
         }

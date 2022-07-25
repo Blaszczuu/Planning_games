@@ -45,11 +45,10 @@ namespace Client
 
         private static void RequestLoop()//obsługa wysyłki
         {
-            Console.WriteLine(@"Napisz ""stop"" by się poprawnie rozłączyć");
+            Console.WriteLine(@"Podaj swój e-mail by zalogować się do konta");
 
             while (true)
             {
-                //EmailValidation();
                 SendMessage();
                 Console.Clear();
                 ReceiveResponse();
@@ -67,7 +66,7 @@ namespace Client
 
         private static void SendMessage()//wysyłanie
         {
-             Console.Write("Wybierz Karte: ");
+             Console.Write("Podaj e-mail: ");
              string request = Console.ReadLine();
             SendString(request);
 
@@ -82,7 +81,7 @@ namespace Client
             string request = Console.ReadLine();
             SendString(request);
 
-            if (request.ToLower() == "kacper.pl")
+            /*if (request.ToLower() == "kacper.pl")
             {
                 MainM();
             }
@@ -93,7 +92,7 @@ namespace Client
             if (request.ToLower() == "michal.pl")
             {
 
-            }
+            }*/
         }
 
         private static void SendString(string text)//wysyłanie
@@ -111,6 +110,20 @@ namespace Client
             Array.Copy(buffer, data, received);
             string text = Encoding.ASCII.GetString(data);
             Console.WriteLine(text);
+
+            if (text == "Witamy ScrumMastera")
+            {
+                Thread.Sleep(TimeSpan.FromSeconds(1));
+                MainM();
+            }
+            if (text == "Witamy ProductOwnera")
+            {
+
+            }
+            if (text  == "Witamy Developera")
+            {
+
+            }
         }
     }
     }

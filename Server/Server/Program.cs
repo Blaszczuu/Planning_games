@@ -104,7 +104,7 @@ namespace Server
             }
             catch (SocketException)
             {
-                Console.WriteLine("Klient wymusił zamknięcie aplikacji, bez poprawnego wyjścia");
+                Console.WriteLine("Klient zamknął aplikacje");
                 current.Close();
                 clientSockets.Remove(current);
                 return;
