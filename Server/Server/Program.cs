@@ -58,7 +58,7 @@ namespace Server
                 return;
             }
 
-            IPHostEntry Host = default(IPHostEntry);
+            IPHostEntry Host = default;
             string Hostname = null;
             Hostname = System.Environment.MachineName;
             Host = Dns.GetHostEntry(Hostname);
@@ -81,7 +81,7 @@ namespace Server
             int received;
             string IPAddress = "";
 
-            IPHostEntry Host = default(IPHostEntry);
+            IPHostEntry Host = default;
             string Hostname = null;
             Hostname = System.Environment.MachineName;
             Host = Dns.GetHostEntry(Hostname);
@@ -113,25 +113,25 @@ namespace Server
             var result = JsonSerializer.Deserialize<LoginRequest>(text);
 
 
-            if (result.email == "sebastian@abb.pl")
+            if (result.Email == "sebastian@abb.pl")
             {
                 // Scrum Master
 
 
                 var jsonResponse = JsonSerializer.Serialize<LoginResponse>(new LoginResponse()
                 {
-                    email = result.email,
+                    email = result.Email,
                     role = Role.ScrumMaster
                 });
 
                 byte[] data = Encoding.ASCII.GetBytes(jsonResponse);
                 current.Send(data);
             }
-            else if (result.email == "kacper@abb.pl")
+            else if (result.Email == "kacper@abb.pl")
             {
                 var response = new LoginResponse()
                 {
-                    email = result.email,
+                    email = result.Email,
                     role = Role.ProductOwner
                 };
                 var jsonResponse = JsonSerializer.Serialize<LoginResponse>(response);
@@ -144,7 +144,7 @@ namespace Server
             {
                 var response = new LoginResponse()
                 {
-                    email = result.email,
+                    email = result.Email,
                     role = Role.Developer
                 };
 

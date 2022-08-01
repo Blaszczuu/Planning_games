@@ -6,12 +6,8 @@ using System.Threading.Tasks;
 
 namespace Client
 {
-    public class game
+    public class StartGame
     {
-        public static void FiboGame()
-        {
-
-        }
-
+        
     }
 }

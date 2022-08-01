@@ -8,8 +8,7 @@ namespace Client
 {
     class ClientApp
     {
-        private static readonly Socket ClientSocket = new Socket
-            (AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+        private static readonly Socket ClientSocket = new (AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
         private const int PORT = 100;
 
@@ -17,8 +16,7 @@ namespace Client
         {
             Console.Title = "Client";
             ConnectToServer();
-            RequestLoop();
-            
+            RequestLoop(); 
         }
 
         private static void ConnectToServer()//łączenie z serwerem
@@ -67,7 +65,7 @@ namespace Client
         {
             LoginRequest loginRequest = new LoginRequest()
             {
-                email = text
+                Email = text
             };
 
             string json = JsonSerializer.Serialize(loginRequest);
@@ -101,15 +99,12 @@ namespace Client
             {
                 Console.Clear();
                 Console.Write(result.email + " zalogowany jako " + result.role);
-
             }
             else
             {
                 Console.Clear();
                 Console.Write(result.email + " zalogowany jako " + result.role);
-                //game.FiboGame();
             }
-
             return false;
         }
         

@@ -18,28 +18,31 @@ namespace Client
             {
                MainMenu();
             }
-
         }
         private static void MainMenu()
         {
             Console.Clear();
             Console.WriteLine("Wybierz opcje:");
-            Console.WriteLine("1) Dodaj temat");
-            Console.WriteLine("2) Wyświetl dodane tematy");
-            Console.WriteLine("3) Wybierz talie");
+            Console.WriteLine("1) Rozpocznij grę");
+            Console.WriteLine("2) Dodaj temat");
+            Console.WriteLine("3) Wyświetl dodane tematy");
+            Console.WriteLine("4) Wybierz talie");
             Console.Write("\r\nWybierz opcje: ");
 
             switch (Console.ReadLine())
             {
                 case "1":
+                
+                    break;
+                case "2":
                     Console.Clear();
                     GameAdd();
                     break;
-                case "2":
+                case "3":
                     ShowID();
                     Console.ReadKey();
                     break;
-                case "3":
+                case "4":
                     Console.Clear();
                     var talia = talieKart.GetDostepneTalieKart();
                     for (int i = 0; i < talia.Count; i++)
