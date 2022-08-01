@@ -32,6 +32,7 @@ namespace Client
             switch (Console.ReadLine())
             {
                 case "1":
+                    Console.Clear();
                     GameAdd();
                     break;
                 case "2":
@@ -73,15 +74,5 @@ namespace Client
             }
 
         }
-
-        private static void DisplayResult(string message)
-        {
-            Console.WriteLine($"\r\nTwoja rozgrywka '{message}' została dodana do listy tematów");
-            Console.Write("\r\nNaciśnij enter aby wrócić do menu");
-            Console.ReadLine();
-        }
-
-
-
     }
 }

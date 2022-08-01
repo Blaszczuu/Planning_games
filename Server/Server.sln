@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Server", "Server\Server.csp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Client", "..\Client\Client\Client.csproj", "{FFB2A8A8-C0AA-49D1-A108-C099EE998C66}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataTransferObjects", "DataTransferObjects\DataTransferObjects.csproj", "{0E26665E-60F0-4428-A820-35B6B387E126}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{FFB2A8A8-C0AA-49D1-A108-C099EE998C66}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FFB2A8A8-C0AA-49D1-A108-C099EE998C66}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FFB2A8A8-C0AA-49D1-A108-C099EE998C66}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0E26665E-60F0-4428-A820-35B6B387E126}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0E26665E-60F0-4428-A820-35B6B387E126}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0E26665E-60F0-4428-A820-35B6B387E126}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0E26665E-60F0-4428-A820-35B6B387E126}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

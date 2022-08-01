@@ -1,10 +1,12 @@
 ﻿using System.Net.Sockets;
 using System.Text;
 using System.ComponentModel.DataAnnotations;
+using DataTransferObjects;
+using System.Text.Json;
 
 namespace Client
 {
-    class ClientApp : Menu
+    class ClientApp
     {
         private static readonly Socket ClientSocket = new Socket
             (AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
@@ -47,36 +49,29 @@ namespace Client
         private static void RequestLoop()//obsługa wysyłki
         {
             Console.WriteLine(@"Podaj swój e-mail by zalogować się do konta");
+            SendMessage();
 
-            while (true)
-            {
-                SendMessage();
-                //IsValidEmail();
-                Console.Clear();
-                ReceiveResponse();
-                
-
+            while (!ReceiveResponse())
+            {          
             }
-        }
-
-        private static void Exit()//komenda na wyjscie 
-        {
-            SendString("stop");
-            ClientSocket.Shutdown(SocketShutdown.Both);
-            ClientSocket.Close();
-            Environment.Exit(0);
         }
 
         private static void SendMessage()//wysyłanie
         {
             Console.Write("Wyślij do servera: ");
-            string request = Console.ReadLine();
-            SendString(request);
+            string email = Console.ReadLine();
+            SendLoginRequest(email);
+        }
 
-            if (request.ToLower() == "stop")
+        private static void SendLoginRequest(string text)
+        {
+            LoginRequest loginRequest = new LoginRequest()
             {
-                Exit();
-            }
+                email = text
+            };
+
+            string json = JsonSerializer.Serialize(loginRequest);
+            SendString(json);
         }
 
         private static void SendString(string text)//wysyłanie
@@ -85,29 +80,37 @@ namespace Client
             ClientSocket.Send(buffer, 0, buffer.Length, SocketFlags.None);
         }
 
-        private static void ReceiveResponse()//mail
+        private static bool ReceiveResponse()//mail
         {
             var buffer = new byte[2048];
             int received = ClientSocket.Receive(buffer, SocketFlags.None);
-            if (received == 0) return;
+            if (received == 0) return false;
             var data = new byte[received];
             Array.Copy(buffer, data, received);
             string text = Encoding.ASCII.GetString(data);
-            Console.WriteLine(text);
 
-            if (text == "Witamy ScrumMastera")
+            var result = JsonSerializer.Deserialize<LoginResponse>(text);
+
+            if (result.role == Role.ScrumMaster)
             {
-                Thread.Sleep(TimeSpan.FromSeconds(1));
-                MainM();
+                Console.Clear();
+                Console.Write(result.email + " zalogowany jako " + result.role);
+                Menu.MainM();
             }
-            if (text == "Witamy ProductOwnera")
+            else if (result.role == Role.ProductOwner)
             {
-                Thread.Sleep(TimeSpan.FromSeconds(1));
+                Console.Clear();
+                Console.Write(result.email + " zalogowany jako " + result.role);
+
             }
-            if (text  == "Witamy Developera")
+            else
             {
-                Thread.Sleep(TimeSpan.FromSeconds(1));
+                Console.Clear();
+                Console.Write(result.email + " zalogowany jako " + result.role);
+                //game.FiboGame();
             }
+
+            return false;
         }
         
     }

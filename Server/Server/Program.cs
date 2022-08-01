@@ -1,8 +1,10 @@
-﻿using System;
+﻿using DataTransferObjects;
+using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Text.Json;
 
 namespace Server
 {
@@ -42,23 +44,6 @@ namespace Server
 
             serverSocket.Close();
         }
-        public static void GetIP()
-        {
-            {
-                string IPAddress = "";
-                IPHostEntry Host = default(IPHostEntry);
-                string Hostname = null;
-                Hostname = System.Environment.MachineName;
-                Host = Dns.GetHostEntry(Hostname);
-                foreach (IPAddress IP in Host.AddressList)
-                {
-                    if (IP.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
-                    {
-                        IPAddress = Convert.ToString(IP);
-                    }
-                }
-            }
-        }
         public static void AcceptCallback(IAsyncResult AR)//akceptacja polaczenia od klienta
         {
             Socket socket;
@@ -68,52 +53,10 @@ namespace Server
             {
                 socket = serverSocket.EndAccept(AR);
             }
-            catch (ObjectDisposedException) 
+            catch (ObjectDisposedException)
             {
                 return;
             }
-            
-                IPHostEntry Host = default(IPHostEntry);
-                string Hostname = null;
-                Hostname = System.Environment.MachineName;
-                Host = Dns.GetHostEntry(Hostname);
-                foreach (IPAddress IP in Host.AddressList)
-                {
-                    if (IP.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
-                    {
-                        IPAddress = Convert.ToString(IP);
-                    }
-                }
-            
-
-            clientSockets.Add(socket);
-            socket.BeginReceive(buffer, 0, BUFFER_SIZE, SocketFlags.None, ReceiveCallback, socket);
-            Console.WriteLine("Klient połączony, adres IP klienta: "+ IPAddress) ;
-            serverSocket.BeginAccept(AcceptCallback, null);
-        }
-
-        public static void ReceiveCallback(IAsyncResult AR)//otrzymywanie wiadomosci
-        {
-            Socket current = (Socket)AR.AsyncState;
-            int received;
-            string IPAddress = "";
-
-            try
-            {
-                received = current.EndReceive(AR);
-            }
-            catch (SocketException)
-            {
-                Console.WriteLine("Klient zamknął aplikacje");
-                current.Close();
-                clientSockets.Remove(current);
-                return;
-            }
-
-            byte[] recBuf = new byte[received];
-            Array.Copy(buffer, recBuf, received);
-            string text = Encoding.ASCII.GetString(recBuf);
-            Console.WriteLine("Otrzymany tekst: " + text);
 
             IPHostEntry Host = default(IPHostEntry);
             string Hostname = null;
@@ -127,30 +70,90 @@ namespace Server
                 }
             }
 
+            clientSockets.Add(socket);
+            socket.BeginReceive(buffer, 0, BUFFER_SIZE, SocketFlags.None, ReceiveCallback, socket);
+            Console.WriteLine("Klient połączony, adres IP klienta: " + IPAddress);
+            serverSocket.BeginAccept(AcceptCallback, null);
+        }
+        public static void ReceiveCallback(IAsyncResult AR)//otrzymywanie wiadomosci
+        {
+            Socket current = (Socket)AR.AsyncState;
+            int received;
+            string IPAddress = "";
 
-            if (text.ToLower() == "stop") // klient wyszedł poprawnie
+            IPHostEntry Host = default(IPHostEntry);
+            string Hostname = null;
+            Hostname = System.Environment.MachineName;
+            Host = Dns.GetHostEntry(Hostname);
+            foreach (IPAddress IP in Host.AddressList)
             {
-                current.Shutdown(SocketShutdown.Both);
+                if (IP.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
+                {
+                    IPAddress = Convert.ToString(IP);
+                }
+            }
+            try
+            {
+                received = current.EndReceive(AR);
+            }
+            catch (SocketException)
+            {
+                Console.WriteLine("Klient zamknął aplikacje, adres IP klienta: "+ IPAddress);
                 current.Close();
                 clientSockets.Remove(current);
-                Console.WriteLine("Klient rozłączył się, Adres Ip Klienta: "+IPAddress);
                 return;
             }
-            if (text.ToLower() == "kacper@abb.pl")
+
+            byte[] recBuf = new byte[received];
+            Array.Copy(buffer, recBuf, received);
+            string text = Encoding.ASCII.GetString(recBuf);
+            Console.WriteLine("Otrzymany tekst: " + text);
+
+
+            var result = JsonSerializer.Deserialize<LoginRequest>(text);
+
+
+            if (result.email == "sebastian@abb.pl")
             {
-                byte[] data = Encoding.ASCII.GetBytes("Witamy ScrumMastera");
+                // Scrum Master
+
+
+                var jsonResponse = JsonSerializer.Serialize<LoginResponse>(new LoginResponse()
+                {
+                    email = result.email,
+                    role = Role.ScrumMaster
+                });
+
+                byte[] data = Encoding.ASCII.GetBytes(jsonResponse);
                 current.Send(data);
             }
-            if (text.ToLower() == "sebastian@abb.pl")
+            else if (result.email == "kacper@abb.pl")
             {
-                byte[] data = Encoding.ASCII.GetBytes("Witamy ProductOwnera");
+                var response = new LoginResponse()
+                {
+                    email = result.email,
+                    role = Role.ProductOwner
+                };
+                var jsonResponse = JsonSerializer.Serialize<LoginResponse>(response);
+
+                byte[] data = Encoding.ASCII.GetBytes(jsonResponse);
+                current.Send(data);
+
+            }
+            else
+            {
+                var response = new LoginResponse()
+                {
+                    email = result.email,
+                    role = Role.Developer
+                };
+
+                var jsonResponse = JsonSerializer.Serialize<LoginResponse>(response);
+
+                byte[] data = Encoding.ASCII.GetBytes(jsonResponse);
                 current.Send(data);
             }
-            /*else
-            {
-                byte[] data = Encoding.ASCII.GetBytes("Witamy Developera");
-                current.Send(data);
-            }*/
+
             current.BeginReceive(buffer, 0, BUFFER_SIZE, SocketFlags.None, ReceiveCallback, current);
         }
 
