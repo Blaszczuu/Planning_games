@@ -54,16 +54,22 @@ namespace Client
             }
         }
 
-        private static string CaptureInput()
+        private static string CaptureID()
+        { 
+            Console.Write("Podaj ID rozgrywki: ");
+            return Console.ReadLine();
+
+        }
+        public static string CaptureInput()
         {
-            Console.Write("Podaj temat rozgrywki: ");
+            Console.Write("Podaj Temat rozgrywki: ");
             return Console.ReadLine();
         }
 
         private static void GameAdd()
         {
             Console.WriteLine("Rozgrywka: ");
-            items.Add(CaptureInput());
+            items.Add("ID: "+CaptureID()+"\nTemat rozgrywki: "+ CaptureInput());
 
         }
 

@@ -41,7 +41,6 @@ namespace Server
                 socket.Shutdown(SocketShutdown.Both);
                 socket.Close();
             }
-
             serverSocket.Close();
         }
         public static void AcceptCallback(IAsyncResult AR)//akceptacja polaczenia od klienta
@@ -115,8 +114,6 @@ namespace Server
 
             if (result.Email == "sebastian@abb.pl")
             {
-                // Scrum Master
-
 
                 var jsonResponse = JsonSerializer.Serialize<LoginResponse>(new LoginResponse()
                 {

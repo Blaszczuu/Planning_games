@@ -54,7 +54,7 @@ namespace Client
             }
         }
 
-        private static void SendMessage()//wysyłanie
+        public static void SendMessage()//wysyłanie
         {
             Console.Write("Wyślij do servera: ");
             string email = Console.ReadLine();
@@ -72,7 +72,7 @@ namespace Client
             SendString(json);
         }
 
-        private static void SendString(string text)//wysyłanie
+        public static void SendString(string text)//wysyłanie
         {
             byte[] buffer = Encoding.ASCII.GetBytes(text);
             ClientSocket.Send(buffer, 0, buffer.Length, SocketFlags.None);
@@ -104,6 +104,7 @@ namespace Client
             {
                 Console.Clear();
                 Console.Write(result.email + " zalogowany jako " + result.role);
+                DevMenu.DevM();
             }
             return false;
         }

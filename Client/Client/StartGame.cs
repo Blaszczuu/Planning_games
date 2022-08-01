@@ -8,6 +8,6 @@ namespace Client
 {
     public class StartGame
     {
-        
+
     }
 }
