@@ -58,5 +58,15 @@ namespace Client
     }
     public class Talia 
     {
+        private static TaliaXyz talieKart = new TaliaXyz();
+        public static void Talie()
+        {
+
+            var talia = talieKart.GetDostepneTalieKart();
+            for (int i = 0; i < talia.Count; i++)
+            {
+                Console.WriteLine(i + 1 + ") " + talia[i]);
+            }
+        }
     }
 }

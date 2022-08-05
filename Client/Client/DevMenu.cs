@@ -11,9 +11,8 @@ namespace Client
         public static void DevM()
         {
             Console.WriteLine("\nTemat do gry + 'implementacja wysłanego tematu'");
-            Console.WriteLine("\nWybierz Kartę");
-            //string card = Console.ReadLine();
-            ClientApp.SendMessage();
+            
+            ClientApp.SendCard();
 
         }
     }

@@ -53,6 +53,23 @@ namespace Client
             {          
             }
         }
+        public static void SendCard()
+        {
+            Console.Write("Wybierz Kartę: ");
+            string card = Console.ReadLine();
+            SendCardReq(card); 
+        }
+        private static void SendCardReq(string tekst)
+        {
+            CardPacksRequest CardRequest = new CardPacksRequest()
+            {
+                Cards =  tekst.Split('\u002C'),
+            };
+
+            string json = JsonSerializer.Serialize(CardRequest);
+            SendString(json);
+
+        }
 
         public static void SendMessage()//wysyłanie
         {

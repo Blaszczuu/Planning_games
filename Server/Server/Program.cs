@@ -74,7 +74,31 @@ namespace Server
             Console.WriteLine("Klient połączony, adres IP klienta: " + IPAddress);
             serverSocket.BeginAccept(AcceptCallback, null);
         }
-        public static void ReceiveCallback(IAsyncResult AR)//otrzymywanie wiadomosci
+        public static void CardGet(IAsyncResult AR)
+        {
+            Socket current = (Socket)AR.AsyncState;
+            int received;
+           
+            try
+            {
+                received = current.EndReceive(AR);
+            }
+            catch (SocketException)
+            {
+                return;
+            }
+
+            byte[] recBuf = new byte[received];
+            Array.Copy(buffer, recBuf, received);
+            string text = Encoding.ASCII.GetString(recBuf);
+            Console.WriteLine("Otrzymany tekst: " + text);
+
+            var result = JsonSerializer.Deserialize<CardPacksRequest>(text);
+
+
+
+        }
+        public static void ReceiveCallback(IAsyncResult AR)//otrzymywanie mail
         {
             Socket current = (Socket)AR.AsyncState;
             int received;

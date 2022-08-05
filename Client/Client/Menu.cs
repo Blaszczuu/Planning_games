@@ -1,7 +1,9 @@
-﻿using System;
+﻿using DataTransferObjects;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace Client
@@ -9,7 +11,6 @@ namespace Client
     public class Menu : Talia
     {
         private static List<string> items = new List<string>();
-        private static TaliaXyz talieKart = new TaliaXyz();
         public static void MainM()
         {
             Console.Title = "ServerMenu";
@@ -44,16 +45,28 @@ namespace Client
                     break;
                 case "4":
                     Console.Clear();
-                    var talia = talieKart.GetDostepneTalieKart();
-                    for (int i = 0; i < talia.Count; i++)
-                    {
-                        Console.WriteLine(i+1 + ") " + talia[i]);
-                    }
+                    Talia.Talie();
+                    //SelectTalia();
                     Console.ReadKey();
                     break;
             }
         }
+        public static void SelectTalia()
+        {
+            Console.Write("Wybierz Kartę: ");
+            string Talia = Console.ReadLine();
+            GetTalia(Talia);
+        }
+        public static void GetTalia(string tekst1)
+        {
+            CardPacksRequest CardRequest = new CardPacksRequest()
+            {
+                packName = tekst1,
+            };
 
+            string json = JsonSerializer.Serialize(CardRequest);
+            
+        }
         private static string CaptureID()
         { 
             Console.Write("Podaj ID rozgrywki: ");
