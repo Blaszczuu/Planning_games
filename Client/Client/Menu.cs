@@ -53,33 +53,20 @@ namespace Client
             Console.ReadKey();
             
         }
-        public static void GetTalia(string tekst1)
-        {
-            CardPacksRequest TaliaRequest = new()
-            {
-                packName = tekst1,
-            };
-
-            string json = JsonSerializer.Serialize(TaliaRequest);
-            
-        }
         public static string CaptureID()
         { 
             Console.Write("Podaj ID rozgrywki: ");
             return Console.ReadLine();
-
         }
         public static string CaptureInput()
         {
             Console.Write("Podaj Temat rozgrywki: ");
+            
             return Console.ReadLine();
         }
-
         public static void GameAdd()
         {
-            Console.WriteLine("Rozgrywka: ");
-            items.Add("ID: "+CaptureID()+"\nTemat rozgrywki: "+ CaptureInput());
-
+            items.Add("ID: "+CaptureID()+"\nTemat rozgrywki: "+CaptureInput());
         }
 
         public static void ShowID()

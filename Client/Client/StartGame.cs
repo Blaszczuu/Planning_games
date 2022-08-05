@@ -19,6 +19,7 @@ namespace Client
             {
                 case "1":
                     Console.Clear();
+                    ClientApp.SendI();
                     break;
                 case "2":
                     Console.Clear();

@@ -47,7 +47,7 @@ namespace Client
         private static void RequestLoop()//obsługa wysyłki
         {
             Console.WriteLine(@"Podaj swój e-mail by zalogować się do konta");
-            SendMessage();
+            SendMail();
 
             while (!ReceiveResponse())
             {          
@@ -70,8 +70,27 @@ namespace Client
             SendString(json);
 
         }
+        public static void SendI()
+        {
+            Console.WriteLine("Podaj ID Rozgrywki: ");
+            string ID = Console.ReadLine();
+            Console.WriteLine("Podaj Temat Rozgrywki: ");
+            string Txt = Console.ReadLine();
+            SendIRequest(ID,Txt);
+        }
+        public static void SendIRequest(string IDProblem, string ProblemTxt)
+        {
+            EstimatedIRequest EstimatedIRequest = new EstimatedIRequest()
+            {
+                ID = IDProblem,
+                Input = ProblemTxt
+            };
 
-        public static void SendMessage()//wysyłanie
+            string json = JsonSerializer.Serialize(EstimatedIRequest);
+
+            SendString(json);
+        }
+        public static void SendMail()//wysyłanie
         {
             Console.Write("Wyślij do servera: ");
             string email = Console.ReadLine();

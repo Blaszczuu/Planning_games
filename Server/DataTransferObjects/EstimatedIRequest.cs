@@ -1,8 +1,8 @@
 ﻿namespace DataTransferObjects
 {
-    public class Rootobject
+    public class EstimatedIRequest
     {
-        public int ID { get; set; }
-        public string? Name { get; set; }
+        public string ID { get; set; }
+        public string? Input { get; set; }
     }
 }

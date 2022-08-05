@@ -9,7 +9,6 @@ namespace DataTransferObjects
 
     public class CardPacksResponse
     {
-        public string packName { get; set; }
         public string[] cards { get; set; }
     }
 

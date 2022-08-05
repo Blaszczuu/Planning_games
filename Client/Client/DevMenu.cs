@@ -10,7 +10,7 @@ namespace Client
     {
         public static void DevM()
         {
-            Console.WriteLine("\nTemat do gry + 'implementacja wysłanego tematu'");
+            Console.WriteLine("\n'ID'+ Input");
             
             ClientApp.SendCard();
 

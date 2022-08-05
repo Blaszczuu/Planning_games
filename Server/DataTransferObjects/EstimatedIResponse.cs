@@ -2,7 +2,7 @@
 {
     public class EstimatedIResponse
     {
-        public int ID { get; set; }
-        public string? Estimation { get; set; }
+        public string ID { get; set; }
+        public string? Input { get; set; }
     }
 }

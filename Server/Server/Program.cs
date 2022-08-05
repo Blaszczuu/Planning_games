@@ -108,27 +108,39 @@ namespace Server
             string text = Encoding.ASCII.GetString(recBuf);
             Console.WriteLine("Otrzymany tekst: " + text);
 
+            var resultI = JsonSerializer.Deserialize<EstimatedIRequest>(text);
+            if (resultI.Input != null)
+            {
+                var jsonResponse2 = JsonSerializer.Serialize<EstimatedIResponse>(new EstimatedIResponse()
+                {
+                    ID = resultI.ID,
+                    Input = resultI.Input,
+                });
+                byte[] data = Encoding.ASCII.GetBytes(jsonResponse2);
+                current.Send(data);
+            }
 
-            var result = JsonSerializer.Deserialize<LoginRequest>(text);
+            
+            
+            var resultlogin = JsonSerializer.Deserialize<LoginRequest>(text);
 
-
-            if (result.Email == "sebastian@abb.pl")
+            if (resultlogin.Email == "sebastian@abb.pl")
             {
 
                 var jsonResponse = JsonSerializer.Serialize<LoginResponse>(new LoginResponse()
                 {
-                    email = result.Email,
+                    email = resultlogin.Email,
                     role = Role.ScrumMaster
                 });
 
                 byte[] data = Encoding.ASCII.GetBytes(jsonResponse);
                 current.Send(data);
             }
-            else if (result.Email == "kacper@abb.pl")
+            else if (resultlogin.Email == "kacper@abb.pl")
             {
                 var response = new LoginResponse()
                 {
-                    email = result.Email,
+                    email = resultlogin.Email,
                     role = Role.ProductOwner
                 };
                 var jsonResponse = JsonSerializer.Serialize<LoginResponse>(response);
@@ -141,7 +153,7 @@ namespace Server
             {
                 var response = new LoginResponse()
                 {
-                    email = result.Email,
+                    email = resultlogin.Email,
                     role = Role.Developer
                 };
 
