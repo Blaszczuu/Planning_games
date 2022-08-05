@@ -25,25 +25,16 @@ namespace Client
             Console.Clear();
             Console.WriteLine("Wybierz opcje:");
             Console.WriteLine("1) Rozpocznij grę");
-            Console.WriteLine("2) Dodaj temat");
-            Console.WriteLine("3) Wyświetl dodane tematy");
-            Console.WriteLine("4) Wybierz talie");
+            Console.WriteLine("2) Wybierz talie");
             Console.Write("\r\nWybierz opcje: ");
 
             switch (Console.ReadLine())
             {
                 case "1":
-                
+                    Console.Clear();
+                    StartGame.Description();
                     break;
                 case "2":
-                    Console.Clear();
-                    GameAdd();
-                    break;
-                case "3":
-                    ShowID();
-                    Console.ReadKey();
-                    break;
-                case "4":
                     Console.Clear();
                     Talia.Talie();
                     //SelectTalia();
@@ -51,23 +42,28 @@ namespace Client
                     break;
             }
         }
+
+        private static void StartGamee()
+        {
+            // Wyslac tematy do serwera
+        }
+
         public static void SelectTalia()
         {
-            Console.Write("Wybierz Kartę: ");
-            string Talia = Console.ReadLine();
-            GetTalia(Talia);
+            Console.ReadKey();
+            
         }
         public static void GetTalia(string tekst1)
         {
-            CardPacksRequest CardRequest = new CardPacksRequest()
+            CardPacksRequest TaliaRequest = new()
             {
                 packName = tekst1,
             };
 
-            string json = JsonSerializer.Serialize(CardRequest);
+            string json = JsonSerializer.Serialize(TaliaRequest);
             
         }
-        private static string CaptureID()
+        public static string CaptureID()
         { 
             Console.Write("Podaj ID rozgrywki: ");
             return Console.ReadLine();
@@ -79,14 +75,14 @@ namespace Client
             return Console.ReadLine();
         }
 
-        private static void GameAdd()
+        public static void GameAdd()
         {
             Console.WriteLine("Rozgrywka: ");
             items.Add("ID: "+CaptureID()+"\nTemat rozgrywki: "+ CaptureInput());
 
         }
 
-        private static void ShowID()
+        public static void ShowID()
         {
             Console.Clear();
             Console.WriteLine("Dodane ID rozgrywek");

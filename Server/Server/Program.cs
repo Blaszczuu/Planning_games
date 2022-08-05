@@ -57,8 +57,8 @@ namespace Server
                 return;
             }
 
-            IPHostEntry Host = default;
-            string Hostname = null;
+            IPHostEntry? Host = default;
+            string? Hostname = null;
             Hostname = System.Environment.MachineName;
             Host = Dns.GetHostEntry(Hostname);
             foreach (IPAddress IP in Host.AddressList)
@@ -73,30 +73,6 @@ namespace Server
             socket.BeginReceive(buffer, 0, BUFFER_SIZE, SocketFlags.None, ReceiveCallback, socket);
             Console.WriteLine("Klient połączony, adres IP klienta: " + IPAddress);
             serverSocket.BeginAccept(AcceptCallback, null);
-        }
-        public static void CardGet(IAsyncResult AR)
-        {
-            Socket current = (Socket)AR.AsyncState;
-            int received;
-           
-            try
-            {
-                received = current.EndReceive(AR);
-            }
-            catch (SocketException)
-            {
-                return;
-            }
-
-            byte[] recBuf = new byte[received];
-            Array.Copy(buffer, recBuf, received);
-            string text = Encoding.ASCII.GetString(recBuf);
-            Console.WriteLine("Otrzymany tekst: " + text);
-
-            var result = JsonSerializer.Deserialize<CardPacksRequest>(text);
-
-
-
         }
         public static void ReceiveCallback(IAsyncResult AR)//otrzymywanie mail
         {
