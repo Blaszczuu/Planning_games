@@ -8,7 +8,7 @@ namespace Client
 {
     class ClientApp
     {
-        private static readonly Socket ClientSocket = new (AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+        private static readonly Socket ClientSocket = new(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
         private const int PORT = 100;
 
@@ -31,7 +31,7 @@ namespace Client
                 {
                     attempts++;
                     Console.WriteLine("Próba połączenia " + attempts);
-                    
+
                     ClientSocket.Connect(host, PORT);
                 }
                 catch (SocketException)
@@ -49,7 +49,7 @@ namespace Client
             Console.WriteLine(@"Podaj swój e-mail by zalogować się do konta");
             SendMail();
             while (!ReceiveResponse())
-            {          
+            {
             }
 
         }
@@ -57,13 +57,13 @@ namespace Client
         {
             Console.Write("Wybierz Kartę: ");
             string card = Console.ReadLine();
-            SendCardReq(card); 
+            SendCardReq(card);
         }
         private static void SendCardReq(string tekst)
         {
             CardPacksRequest CardRequest = new CardPacksRequest()
             {
-                Cards =  tekst.Split('\u002C'),
+                Cards = tekst.Split('\u002C'),
             };
 
             string json = JsonSerializer.Serialize(CardRequest);
@@ -76,7 +76,7 @@ namespace Client
             string ID = Console.ReadLine();
             Console.WriteLine("Podaj Temat Rozgrywki: ");
             string Txt = Console.ReadLine();
-            SendIRequest(ID,Txt);
+            SendIRequest(ID, Txt);
         }
         public static void SendIRequest(string IDProblem, string ProblemTxt)
         {
@@ -122,7 +122,7 @@ namespace Client
             Array.Copy(buffer, data, received);
             string text = Encoding.ASCII.GetString(data);
 
-            
+
 
             var result = JsonSerializer.Deserialize<LoginResponse>(text);
 
@@ -143,13 +143,20 @@ namespace Client
                 Console.Write(result.email + " zalogowany jako " + result.role);
                 DevMenu.DevM();
             }
-            
+
             return false;
         }
         public static bool ReceiveID()
         {
             var buffer = new byte[2048];
-            int received = ClientSocket.Receive(buffer, SocketFlags.None);
+
+            int received = 0;
+
+            if (ClientSocket.Available > 0)
+            {
+                received = ClientSocket.Receive(buffer, SocketFlags.None);
+            }
+
             if (received == 0) return false;
             var data = new byte[received];
             Array.Copy(buffer, data, received);
@@ -159,10 +166,10 @@ namespace Client
             if (resultI.ID != null)
             {
                 Console.Clear();
-                Console.WriteLine(resultI.ID + resultI.Input);
+                Console.WriteLine("ID Estymowanego tematu\n"+resultI.ID +"Estymowany temat\n"+ resultI.Input);
             }
-            return false;
+            return true;
         }
-        
-        }
+
     }
+}

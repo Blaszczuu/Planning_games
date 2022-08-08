@@ -117,11 +117,13 @@ namespace Server
                     Input = resultI.Input
                 });
                 byte[] data = Encoding.ASCII.GetBytes(jsonResponse2);
-                current.Send(data);
+
+                foreach (var socet in clientSockets)
+                {
+                    socet.Send(data);
+                }
             }
 
-            
-            
             var resultlogin = JsonSerializer.Deserialize<LoginRequest>(text);
 
             if (resultlogin.Email == "sebastian@abb.pl")

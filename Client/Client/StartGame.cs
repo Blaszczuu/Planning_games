@@ -23,10 +23,6 @@ namespace Client
                 case "2":
                     Console.Clear();
                     ClientApp.SendI();
-                    while (!ClientApp.ReceiveID())
-                    {
-
-                    }
                     Console.Clear();
                     Description();
                     break;

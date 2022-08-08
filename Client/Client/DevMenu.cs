@@ -16,7 +16,8 @@ namespace Client
             while (!ClientApp.ReceiveID())
             {
 
-            }
+           }
+            
             ClientApp.SendCard();
             
             
