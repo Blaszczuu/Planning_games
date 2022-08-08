@@ -19,11 +19,14 @@ namespace Client
             {
                 case "1":
                     Console.Clear();
-                    ClientApp.SendI();
                     break;
                 case "2":
                     Console.Clear();
-                    Menu.GameAdd();
+                    ClientApp.SendI();
+                    while (!ClientApp.ReceiveID())
+                    {
+
+                    }
                     Console.Clear();
                     Description();
                     break;

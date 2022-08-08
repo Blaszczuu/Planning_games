@@ -50,8 +50,7 @@ namespace Client
 
         public static void SelectTalia()
         {
-            Console.ReadKey();
-            
+            Console.ReadKey(); 
         }
         public static string CaptureID()
         { 

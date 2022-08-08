@@ -16,7 +16,7 @@ namespace Client
         {
             Console.Title = "Client";
             ConnectToServer();
-            RequestLoop(); 
+            RequestLoop();
         }
 
         private static void ConnectToServer()//łączenie z serwerem
@@ -48,10 +48,10 @@ namespace Client
         {
             Console.WriteLine(@"Podaj swój e-mail by zalogować się do konta");
             SendMail();
-
             while (!ReceiveResponse())
             {          
             }
+
         }
         public static void SendCard()
         {
@@ -87,7 +87,6 @@ namespace Client
             };
 
             string json = JsonSerializer.Serialize(EstimatedIRequest);
-
             SendString(json);
         }
         public static void SendMail()//wysyłanie
@@ -114,7 +113,7 @@ namespace Client
             ClientSocket.Send(buffer, 0, buffer.Length, SocketFlags.None);
         }
 
-        private static bool ReceiveResponse()//mail
+        public static bool ReceiveResponse()//mail
         {
             var buffer = new byte[2048];
             int received = ClientSocket.Receive(buffer, SocketFlags.None);
@@ -122,6 +121,8 @@ namespace Client
             var data = new byte[received];
             Array.Copy(buffer, data, received);
             string text = Encoding.ASCII.GetString(data);
+
+            
 
             var result = JsonSerializer.Deserialize<LoginResponse>(text);
 
@@ -142,9 +143,26 @@ namespace Client
                 Console.Write(result.email + " zalogowany jako " + result.role);
                 DevMenu.DevM();
             }
+            
+            return false;
+        }
+        public static bool ReceiveID()
+        {
+            var buffer = new byte[2048];
+            int received = ClientSocket.Receive(buffer, SocketFlags.None);
+            if (received == 0) return false;
+            var data = new byte[received];
+            Array.Copy(buffer, data, received);
+            string text = Encoding.ASCII.GetString(data);
+
+            var resultI = JsonSerializer.Deserialize<EstimatedIResponse>(text);
+            if (resultI.ID != null)
+            {
+                Console.Clear();
+                Console.WriteLine(resultI.ID + resultI.Input);
+            }
             return false;
         }
         
+        }
     }
-    }
-

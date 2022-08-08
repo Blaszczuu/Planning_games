@@ -109,12 +109,12 @@ namespace Server
             Console.WriteLine("Otrzymany tekst: " + text);
 
             var resultI = JsonSerializer.Deserialize<EstimatedIRequest>(text);
-            if (resultI.Input != null)
+            if (resultI.ID != null)
             {
                 var jsonResponse2 = JsonSerializer.Serialize<EstimatedIResponse>(new EstimatedIResponse()
                 {
                     ID = resultI.ID,
-                    Input = resultI.Input,
+                    Input = resultI.Input
                 });
                 byte[] data = Encoding.ASCII.GetBytes(jsonResponse2);
                 current.Send(data);
@@ -149,6 +149,7 @@ namespace Server
                 current.Send(data);
 
             }
+
             else
             {
                 var response = new LoginResponse()

@@ -8,12 +8,18 @@ namespace Client
 {
     public class DevMenu
     {
+        
         public static void DevM()
         {
-            Console.WriteLine("\n'ID'+ Input");
-            
-            ClientApp.SendCard();
+            Console.Title = "Devform";
+            Console.WriteLine("\ntest");
+            while (!ClientApp.ReceiveID())
+            {
 
+            }
+            ClientApp.SendCard();
+            
+            
         }
     }
 }
