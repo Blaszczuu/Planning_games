@@ -74,7 +74,7 @@ namespace Server
             Console.WriteLine("Klient połączony, adres IP klienta: " + IPAddress);
             serverSocket.BeginAccept(AcceptCallback, null);
         }
-        public static void ReceiveCallback(IAsyncResult AR)//otrzymywanie mail
+        public static void ReceiveCallback(IAsyncResult AR)//otrzymywanie mail i wysyłka tematu
         {
             Socket current = (Socket)AR.AsyncState;
             int received;
@@ -108,6 +108,20 @@ namespace Server
             string text = Encoding.ASCII.GetString(recBuf);
             Console.WriteLine("Otrzymany tekst: " + text);
 
+            //var resultCard = JsonSerializer.Deserialize<CardPacksRequest>(text);
+            //if (resultCard != null)
+            //{
+            //    var jsonresponse3 = JsonSerializer.Serialize<CardPacksResponse>(new CardPacksResponse()
+            //    {
+            //        Cards = resultCard.Cards
+            //    });
+            //    byte[] data = Encoding.ASCII.GetBytes(jsonresponse3);
+            //    foreach (var socket1 in clientSockets)
+            //    {
+            //        socket1.Send(data);
+            //    }
+            //}
+
             var resultI = JsonSerializer.Deserialize<EstimatedIRequest>(text);
             if (resultI.ID != null)
             {
@@ -118,9 +132,9 @@ namespace Server
                 });
                 byte[] data = Encoding.ASCII.GetBytes(jsonResponse2);
 
-                foreach (var socet in clientSockets)
+                foreach (var socket in clientSockets)
                 {
-                    socet.Send(data);
+                    socket.Send(data);
                 }
             }
 
