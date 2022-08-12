@@ -61,9 +61,9 @@ namespace Client
         }
         private static void SendCardReq(string tekst)
         {
-            CardPacksRequest CardRequest = new CardPacksRequest()
+            CardPacksRequest CardRequest = new()
             {
-                Cards = tekst.Split('\u002C'),
+                Cards = tekst
             };
 
             string json = JsonSerializer.Serialize(CardRequest);
@@ -112,6 +112,29 @@ namespace Client
             byte[] buffer = Encoding.ASCII.GetBytes(text);
             ClientSocket.Send(buffer, 0, buffer.Length, SocketFlags.None);
         }
+        public static bool ReceiveCard()
+        {
+            var buffer = new byte[2048];
+
+            int received = 0;
+
+            if (ClientSocket.Available > 0)
+            {
+                received = ClientSocket.Receive(buffer, SocketFlags.None);
+            }
+            if (received == 0) return false;
+            var data = new byte[received];
+            Array.Copy(buffer, data, received);
+            string text = Encoding.ASCII.GetString(data);
+
+            var resultCard = JsonSerializer.Deserialize<CardPacksRequest>(text);
+            if (resultCard != null)
+            {
+                Console.WriteLine(resultCard);
+            }
+            return false;   
+
+        }
 
         public static bool ReceiveResponse()//mail
         {
@@ -136,6 +159,7 @@ namespace Client
             {
                 Console.Clear();
                 Console.Write(result.email + " zalogowany jako " + result.role);
+                ProductOwner.PoM();
             }
             else
             {
@@ -166,7 +190,7 @@ namespace Client
             if (resultI.ID != null)
             {
                 Console.Clear();
-                Console.WriteLine("ID Estymowanego tematu\n"+resultI.ID +"Estymowany temat\n"+ resultI.Input);
+                Console.WriteLine("ID Estymowanego tematu: "+resultI.ID +"\nEstymowany temat: "+ resultI.Input);
             }
             return true;
         }

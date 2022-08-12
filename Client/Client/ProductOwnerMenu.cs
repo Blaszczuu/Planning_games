@@ -6,10 +6,9 @@ using System.Threading.Tasks;
 
 namespace Client
 {
-    public class DevMenu
+    class ProductOwner
     {
-        
-        public static void DevM()
+        public static void PoM()
         {
             Console.Title = "Devform";
             Console.WriteLine("\nOczekiwanie na wysłanie tematu przez ScrumMastera");
@@ -17,8 +16,6 @@ namespace Client
             {
 
             }
-            Console.WriteLine("\n");
-            ClientApp.SendCard();   
         }
     }
 }

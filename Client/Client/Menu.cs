@@ -37,21 +37,11 @@ namespace Client
                 case "2":
                     Console.Clear();
                     Talia.Talie();
-                    //SelectTalia();
                     Console.ReadKey();
                     break;
             }
         }
 
-        private static void StartGamee()
-        {
-            // Wyslac tematy do serwera
-        }
-
-        public static void SelectTalia()
-        {
-            Console.ReadKey(); 
-        }
         public static string CaptureID()
         { 
             Console.Write("Podaj ID rozgrywki: ");
