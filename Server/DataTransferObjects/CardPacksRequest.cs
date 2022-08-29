@@ -2,7 +2,7 @@
 {
     public class CardPacksRequest
     {
-        public string[]? Cards { get; set; }
+        public string Cards { get; set; }
     }
 }
 

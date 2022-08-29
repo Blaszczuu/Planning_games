@@ -43,7 +43,7 @@ namespace Client
 
     public class TaliaXyz
     {
-        List<ITalia> listaTalii = new List<ITalia>();
+        readonly List<ITalia> listaTalii = new();
 
         public TaliaXyz()
         {
@@ -58,7 +58,7 @@ namespace Client
     }
     public class Talia 
     {
-        private static TaliaXyz talieKart = new TaliaXyz();
+        private static readonly TaliaXyz talieKart = new();
         public static void Talie()
         {
 
