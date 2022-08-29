@@ -107,46 +107,40 @@ namespace Server
             Array.Copy(buffer, recBuf, received);
             string text = Encoding.ASCII.GetString(recBuf);
             Console.WriteLine("Otrzymany tekst: " + text);
+            
+            var resultCard = JsonSerializer.Deserialize<CardPacksRequest>(text);
 
-            //var resultCard = JsonSerializer.Deserialize<CardPacksRequest>(text);
-            //if (resultCard != null)
-            //{
-            //    var jsonresponse3 = JsonSerializer.Serialize<CardPacksResponse>(new CardPacksResponse()
-            //    {
-            //        Cards = resultCard.Cards
-            //    });
-            //    byte[] data = Encoding.ASCII.GetBytes(jsonresponse3);
-            //    foreach (var socket1 in clientSockets)
-            //    {
-            //        socket1.Send(data);
-            //    }
-            //}
+            if (resultCard.state == State.Cards)
+            {
+                CardCommunication(resultCard);
+            }
+
 
             var resultI = JsonSerializer.Deserialize<EstimatedIRequest>(text);
-            if (resultI.ID != null)
+            if (resultI.state ==State.Estiamtion)
             {
-                var jsonResponse2 = JsonSerializer.Serialize<EstimatedIResponse>(new EstimatedIResponse()
-                {
-                    ID = resultI.ID,
-                    Input = resultI.Input
-                });
-                byte[] data = Encoding.ASCII.GetBytes(jsonResponse2);
-
-                foreach (var socket in clientSockets)
-                {
-                    socket.Send(data);
-                }
+                ProblemEstimation(resultI);
             }
 
             var resultlogin = JsonSerializer.Deserialize<LoginRequest>(text);
+            if (resultlogin.state==State.Login)
+            {
+                EmailCheckCallBack(current, resultlogin);
+            }
 
+            current.BeginReceive(buffer, 0, BUFFER_SIZE, SocketFlags.None, ReceiveCallback, current);
+        }
+
+        private static void EmailCheckCallBack(Socket current, LoginRequest? resultlogin)
+        {
             if (resultlogin.Email == "sebastian@abb.pl")
             {
 
                 var jsonResponse = JsonSerializer.Serialize<LoginResponse>(new LoginResponse()
                 {
                     email = resultlogin.Email,
-                    role = Role.ScrumMaster
+                    role = Role.ScrumMaster,
+
                 });
 
                 byte[] data = Encoding.ASCII.GetBytes(jsonResponse);
@@ -157,7 +151,8 @@ namespace Server
                 var response = new LoginResponse()
                 {
                     email = resultlogin.Email,
-                    role = Role.ProductOwner
+                    role = Role.ProductOwner,
+
                 };
                 var jsonResponse = JsonSerializer.Serialize<LoginResponse>(response);
 
@@ -165,13 +160,13 @@ namespace Server
                 current.Send(data);
 
             }
-
             else
             {
                 var response = new LoginResponse()
                 {
                     email = resultlogin.Email,
-                    role = Role.Developer
+                    role = Role.Developer,
+
                 };
 
                 var jsonResponse = JsonSerializer.Serialize<LoginResponse>(response);
@@ -179,9 +174,39 @@ namespace Server
                 byte[] data = Encoding.ASCII.GetBytes(jsonResponse);
                 current.Send(data);
             }
-
-            current.BeginReceive(buffer, 0, BUFFER_SIZE, SocketFlags.None, ReceiveCallback, current);
         }
 
+        private static void ProblemEstimation(EstimatedIRequest? resultI)
+        {
+            if (resultI.ID != null)
+            {
+                var jsonResponse2 = JsonSerializer.Serialize<EstimatedIResponse>(new EstimatedIResponse()
+                {
+                    ID = resultI.ID,
+                    Input = resultI.Input,
+                });
+                byte[] data = Encoding.ASCII.GetBytes(jsonResponse2);
+
+                foreach (var socket in clientSockets)
+                {
+                    socket.Send(data);
+                }
+            }
+        }
+
+        private static void CardCommunication(CardPacksRequest? resultCard)
+        {
+            var jsonresponse3 = JsonSerializer.Serialize<CardPacksResponse>(new CardPacksResponse()
+            {
+                Cards = resultCard.Cards,
+
+            });
+            byte[] data = Encoding.ASCII.GetBytes(jsonresponse3);
+
+            foreach (var socket1 in clientSockets)
+            {
+                socket1.Send(data);
+            }
+        }
     }
 }

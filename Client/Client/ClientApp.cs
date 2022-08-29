@@ -64,7 +64,8 @@ namespace Client
         {
             CardPacksRequest CardRequest = new()
             {
-                Cards = tekst
+                Cards = tekst,
+                state = State.Cards
             };
 
             string json = JsonSerializer.Serialize(CardRequest);
@@ -84,7 +85,8 @@ namespace Client
             EstimatedIRequest EstimatedIRequest = new EstimatedIRequest()
             {
                 ID = IDProblem,
-                Input = ProblemTxt
+                Input = ProblemTxt,
+                state = State.Estiamtion
             };
 
             string json = JsonSerializer.Serialize(EstimatedIRequest);
@@ -101,7 +103,8 @@ namespace Client
         {
             LoginRequest loginRequest = new LoginRequest()
             {
-                Email = text
+                Email = text,
+                state = State.Login
             };
 
             string json = JsonSerializer.Serialize(loginRequest);
@@ -128,7 +131,8 @@ namespace Client
             Array.Copy(buffer, data, received);
             string text = Encoding.ASCII.GetString(data);
 
-            var resultCard = JsonSerializer.Deserialize<CardPacksRequest>(text);
+
+            var resultCard = JsonSerializer.Deserialize<CardPacksResponse>(text);
             if (resultCard != null)
             {
                 Console.WriteLine(resultCard);
@@ -195,6 +199,5 @@ namespace Client
             }
             return true;
         }
-
     }
 }

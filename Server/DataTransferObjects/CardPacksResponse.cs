@@ -11,6 +11,7 @@ namespace DataTransferObjects
     public class CardPacksResponse
     {
         public string Cards { get; set; }
+        public State state { get; set; }
     }
 
 }
