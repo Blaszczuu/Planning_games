@@ -29,7 +29,7 @@ namespace Server
         {
             Console.WriteLine("Konfiguracja servera...");
             serverSocket.Bind(new IPEndPoint(IPAddress.Any, PORT));
-            serverSocket.Listen(0);
+            serverSocket.Listen();
             serverSocket.BeginAccept(AcceptCallback, null);
             Console.WriteLine("Server skonfigurowany pomyślnie");
         }
@@ -71,6 +71,7 @@ namespace Server
 
             clientSockets.Add(socket);
             socket.BeginReceive(buffer, 0, BUFFER_SIZE, SocketFlags.None, ReceiveCallback, socket);
+        
             Console.WriteLine("Klient połączony, adres IP klienta: " + IPAddress);
             serverSocket.BeginAccept(AcceptCallback, null);
         }
