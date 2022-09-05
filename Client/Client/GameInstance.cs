@@ -12,10 +12,11 @@ namespace Client
         public static void ScrumMenu()
         {
             Console.Title = "ScrumMaster";
-            Console.WriteLine("ID Problemu: ");
-            Console.WriteLine("Estymowany Problem: ");
-            Console.WriteLine("\n\nRezultat Głosowania: ");
             ClientApp.SendCard();
+            while (!ClientApp.ReceiveResult())
+            {
+
+            }
 
         }
     }

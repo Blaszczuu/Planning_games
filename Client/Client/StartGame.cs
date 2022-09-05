@@ -12,16 +12,16 @@ namespace Client
         public static void Description()
         {
             Console.Title = "ScrumMenu";
-            Console.WriteLine("1) Rozpocznij Głosowanie");
+            Console.WriteLine("1) Wyślij dodany temat do estymacji");
             Console.WriteLine("2) Dodaj temat");
             Console.WriteLine("3) Wyświetl dodane tematy");
-            Console.WriteLine("4) Wyślij dodany temat do estymacji");
-            Console.WriteLine("5) Wróć");
+            Console.WriteLine("4) Wróć");
             Console.Write("\r\nWybierz opcje: ");
             switch (Console.ReadLine())
             {
                 case "1":
                     Console.Clear();
+                    ClientApp.SendI();
                     GameInstance.ScrumMenu();
                     break;
                 case "2":
@@ -37,11 +37,6 @@ namespace Client
                     Description();
                     break;
                 case "4":
-                    Console.Clear();
-                    ClientApp.SendI();
-                    GameInstance.ScrumMenu();
-                    break;
-                case "5":
                     break;
 
             }

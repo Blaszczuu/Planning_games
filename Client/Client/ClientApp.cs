@@ -199,5 +199,29 @@ namespace Client
             }
             return true;
         }
+        public static bool ReceiveResult()
+        {
+            var buffer = new byte[2048];
+
+            int received = 0;
+
+            if (ClientSocket.Available > 0)
+            {
+                received = ClientSocket.Receive(buffer, SocketFlags.None);
+            }
+            if (received == 0) return false;
+            var data = new byte[received];
+            Array.Copy(buffer, data, received);
+            string text = Encoding.ASCII.GetString(data);
+
+            var receiveresult = JsonSerializer.Deserialize<EstimatedResult>(buffer);
+            if (receiveresult.Result != null)
+            {
+                Console.WriteLine("Wynik głosowania: " + receiveresult.Result);
+            }
+
+                return true;
+
+        }
     }
 }

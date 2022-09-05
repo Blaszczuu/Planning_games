@@ -118,7 +118,7 @@ namespace Server
 
 
             var resultI = JsonSerializer.Deserialize<EstimatedIRequest>(text);
-            if (resultI.state ==State.Estiamtion)
+            if (resultI.state == State.Estiamtion)
             {
                 ProblemEstimation(resultI);
             }
@@ -205,7 +205,7 @@ namespace Server
             byte[] data = Encoding.ASCII.GetBytes(jsonresponse3);
 
             foreach (var socket1 in clientSockets)
-            {
+            { 
                 socket1.Send(data);
             }
         }

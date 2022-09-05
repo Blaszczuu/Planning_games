@@ -17,6 +17,10 @@ namespace Client
             {
 
             }
+            while (!ClientApp.ReceiveResult())
+            {
+
+            }
         }
     }
 }

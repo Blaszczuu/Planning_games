@@ -14,6 +14,7 @@ namespace Client
         {
             Console.Title = "Devform";
             Console.WriteLine("\nOczekiwanie na wysłanie tematu przez ScrumMastera");
+
             while (!ClientApp.ReceiveID())
             {
 
