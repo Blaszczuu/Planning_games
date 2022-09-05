@@ -3,7 +3,7 @@
 {
     public class CardPacksRequest
     {
-        public string Cards { get; set; }
+        public int CardValue { get; set; }
         public State state { get; set; }
     }
 }

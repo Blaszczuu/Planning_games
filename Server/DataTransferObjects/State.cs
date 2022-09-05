@@ -2,8 +2,8 @@
 {
     public enum State
     {
-        Login,
-        Estiamtion,
-        Cards,
+        Login=3,
+        Estiamtion=4,
+        Cards=5
     }
 }

@@ -2,9 +2,9 @@
 {
     public enum Role
     {
-        ProductOwner,
-        ScrumMaster,
-        Developer
+        ProductOwner=2,
+        ScrumMaster=1,
+        Developer=0
     }
 
 }

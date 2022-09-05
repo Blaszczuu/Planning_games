@@ -57,19 +57,19 @@ namespace Client
         public static void SendCard()
         {
             Console.Write("Wybierz Kartę: ");
-            string card = Console.ReadLine();
+            int card = int.Parse(Console.ReadLine());
             SendCardReq(card);
         }
-        private static void SendCardReq(string tekst)
+        private static void SendCardReq(int value)
         {
             CardPacksRequest CardRequest = new()
             {
-                Cards = tekst,
+                CardValue = value,
                 state = State.Cards
             };
 
             string json = JsonSerializer.Serialize(CardRequest);
-            SendString(json);
+            SendInt(json);
 
         }
         public static void SendI()
@@ -111,6 +111,11 @@ namespace Client
             SendString(json);
         }
 
+        public static void SendInt(string text)//wysyłanie
+        {
+            byte[] buffer = Encoding.ASCII.GetBytes(text);
+            ClientSocket.Send(buffer, 0, buffer.Length, SocketFlags.None);
+        }
         public static void SendString(string text)//wysyłanie
         {
             byte[] buffer = Encoding.ASCII.GetBytes(text);
@@ -166,7 +171,7 @@ namespace Client
                 Console.Write(result.email + " zalogowany jako " + result.role);
                 ProductOwner.PoM();
             }
-            else
+            else if (result.role == Role.Developer)
             {
                 Console.Clear();
                 Console.Write(result.email + " zalogowany jako " + result.role);
@@ -214,14 +219,12 @@ namespace Client
             Array.Copy(buffer, data, received);
             string text = Encoding.ASCII.GetString(data);
 
-            var receiveresult = JsonSerializer.Deserialize<EstimatedResult>(buffer);
-            if (receiveresult.Result != null)
-            {
-                Console.WriteLine("Wynik głosowania: " + receiveresult.Result);
-            }
-
-                return true;
-
+            //var receiveresult = JsonSerializer.Deserialize<EstimatedResult>(buffer);
+            //if (receiveresult.Result != null)
+            //{
+            //    Console.WriteLine("Wynik głosowania: " + receiveresult.Result);
+            //}
+            return true;
         }
     }
 }

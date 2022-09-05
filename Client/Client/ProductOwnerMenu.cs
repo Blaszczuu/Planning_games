@@ -11,7 +11,7 @@ namespace Client
     {
         public static void PoM()
         {
-            Console.Title = "Devform";
+            Console.Title = "ProductOwner";
             Console.WriteLine("\nOczekiwanie na wysłanie tematu przez ScrumMastera");
             while (!ClientApp.ReceiveID())
             {

@@ -134,47 +134,49 @@ namespace Server
 
         private static void EmailCheckCallBack(Socket current, LoginRequest? resultlogin)
         {
-            if (resultlogin.Email == "sebastian@abb.pl")
-            {
-
-                var jsonResponse = JsonSerializer.Serialize<LoginResponse>(new LoginResponse()
+            
+                if (resultlogin.Email == "sebastian@abb.pl")
                 {
-                    email = resultlogin.Email,
-                    role = Role.ScrumMaster,
 
-                });
+                    var jsonResponse = JsonSerializer.Serialize<LoginResponse>(new LoginResponse()
+                    {
+                        email = resultlogin.Email,
+                        role = Role.ScrumMaster,
 
-                byte[] data = Encoding.ASCII.GetBytes(jsonResponse);
-                current.Send(data);
-            }
-            else if (resultlogin.Email == "kacper@abb.pl")
-            {
-                var response = new LoginResponse()
+                    });
+
+                    byte[] data = Encoding.ASCII.GetBytes(jsonResponse);
+                    current.Send(data);
+                }
+                else if (resultlogin.Email == "kacper@abb.pl")
                 {
-                    email = resultlogin.Email,
-                    role = Role.ProductOwner,
+                    var response = new LoginResponse()
+                    {
+                        email = resultlogin.Email,
+                        role = Role.ProductOwner,
 
-                };
-                var jsonResponse = JsonSerializer.Serialize<LoginResponse>(response);
+                    };
+                    var jsonResponse = JsonSerializer.Serialize<LoginResponse>(response);
 
-                byte[] data = Encoding.ASCII.GetBytes(jsonResponse);
-                current.Send(data);
+                    byte[] data = Encoding.ASCII.GetBytes(jsonResponse);
+                    current.Send(data);
 
-            }
-            else
-            {
-                var response = new LoginResponse()
+                }
+                else
                 {
-                    email = resultlogin.Email,
-                    role = Role.Developer,
+                    var response = new LoginResponse()
+                    {
+                        email = resultlogin.Email,
+                        role = Role.Developer,
 
-                };
+                    };
 
-                var jsonResponse = JsonSerializer.Serialize<LoginResponse>(response);
+                    var jsonResponse = JsonSerializer.Serialize<LoginResponse>(response);
 
-                byte[] data = Encoding.ASCII.GetBytes(jsonResponse);
-                current.Send(data);
-            }
+                    byte[] data = Encoding.ASCII.GetBytes(jsonResponse);
+                    current.Send(data);
+                }
+            
         }
 
         private static void ProblemEstimation(EstimatedIRequest? resultI)
@@ -195,19 +197,27 @@ namespace Server
             }
         }
 
-        private static void CardCommunication(CardPacksRequest? resultCard)
+        private static void CardCommunication(CardPacksRequest resultCard)
         {
-            var jsonresponse3 = JsonSerializer.Serialize<CardPacksResponse>(new CardPacksResponse()
+                var jsonresponse3 = JsonSerializer.Serialize<CardPacksResponse>(new CardPacksResponse()
+                {
+                    Cards = resultCard.CardValue
+                    
+                });
+                byte[] data = Encoding.ASCII.GetBytes(jsonresponse3);
+
+                foreach (var socket1 in clientSockets)
+                {
+                    socket1.Send(data);
+                }
+                
+        }
+        private static void CardResult(VoteResult result)
+        {
+            var jsonresponse4 = JsonSerializer.Serialize<VoteResult>(new VoteResult()
             {
-                Cards = resultCard.Cards,
-
+                Result= result.Result,
             });
-            byte[] data = Encoding.ASCII.GetBytes(jsonresponse3);
-
-            foreach (var socket1 in clientSockets)
-            { 
-                socket1.Send(data);
-            }
         }
     }
 }
