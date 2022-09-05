@@ -6,6 +6,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Text.Json;
 
+
 namespace Server
 {
     public class Program
@@ -110,10 +111,11 @@ namespace Server
             Console.WriteLine("Otrzymany tekst: " + text);
             
             var resultCard = JsonSerializer.Deserialize<CardPacksRequest>(text);
-
+            
             if (resultCard.state == State.Cards)
             {
-                CardCommunication(resultCard);
+                //CardCommunication(resultCard);
+                CardResult(resultCard);
             }
 
 
@@ -202,22 +204,26 @@ namespace Server
                 var jsonresponse3 = JsonSerializer.Serialize<CardPacksResponse>(new CardPacksResponse()
                 {
                     Cards = resultCard.CardValue
-                    
                 });
-                byte[] data = Encoding.ASCII.GetBytes(jsonresponse3);
+            byte[] data = Encoding.ASCII.GetBytes(jsonresponse3);
 
-                foreach (var socket1 in clientSockets)
-                {
-                    socket1.Send(data);
-                }
-                
-        }
-        private static void CardResult(VoteResult result)
-        {
-            var jsonresponse4 = JsonSerializer.Serialize<VoteResult>(new VoteResult()
+            foreach (var socket1 in clientSockets)
             {
-                Result= result.Result,
-            });
+                socket1.Send(data);
+            }
+
+        }
+        private static void CardResult(CardPacksRequest result)
+        {
+            {
+                var jsonString = JsonSerializer.Serialize(result);
+
+                var yourObject = System.Text.Json.JsonDocument.Parse(jsonString);
+                var CardValue = yourObject.RootElement.GetProperty("CardValue");//wynik
+                Console.WriteLine(CardValue);
+
+                
+            }
         }
     }
 }
