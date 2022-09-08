@@ -219,11 +219,11 @@ namespace Client
             Array.Copy(buffer, data, received);
             string text = Encoding.ASCII.GetString(data);
 
-            //var receiveresult = JsonSerializer.Deserialize<EstimatedResult>(buffer);
-            //if (receiveresult.Result != null)
-            //{
-            //    Console.WriteLine("Wynik głosowania: " + receiveresult.Result);
-            //}
+            var receiveresult = JsonSerializer.Deserialize<VoteResult>(text);
+            if (receiveresult.Result != null)
+            {
+                Console.WriteLine("Wynik głosowania: " + receiveresult.Result);
+            }
             return true;
         }
     }

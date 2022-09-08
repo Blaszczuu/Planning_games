@@ -114,8 +114,7 @@ namespace Server
             
             if (resultCard.state == State.Cards)
             {
-                //CardCommunication(resultCard);
-                CardResult(resultCard);
+                CardCommunication(resultCard);
             }
 
 
@@ -205,6 +204,11 @@ namespace Server
                 {
                     Cards = resultCard.CardValue
                 });
+
+            var jsonString = JsonSerializer.Serialize(resultCard);
+            var CardObject = System.Text.Json.JsonDocument.Parse(jsonString);
+            var CardValue = CardObject.RootElement.GetProperty("CardValue");
+
             byte[] data = Encoding.ASCII.GetBytes(jsonresponse3);
 
             foreach (var socket1 in clientSockets)
@@ -213,17 +217,28 @@ namespace Server
             }
 
         }
-        private static void CardResult(CardPacksRequest result)
-        {
-            {
-                var jsonString = JsonSerializer.Serialize(result);
+        //private static void CardResult(CardPacksRequest result)
+        //{
+        //    {
+        //        var jsonString = JsonSerializer.Serialize(result);
 
-                var yourObject = System.Text.Json.JsonDocument.Parse(jsonString);
-                var CardValue = yourObject.RootElement.GetProperty("CardValue");//wynik
-                Console.WriteLine(CardValue);
+        //        var CardObject = System.Text.Json.JsonDocument.Parse(jsonString);
+        //        var CardValue = CardObject.RootElement.GetProperty("CardValue");
 
-                
-            }
-        }
+        //        var jsonresponse3 = JsonSerializer.Serialize<VoteResult>(new VoteResult()
+        //        {
+        //            Result = result.CardValue
+        //        });
+        //        byte[] data = Encoding.ASCII.GetBytes(jsonresponse3);
+
+        //        foreach (var socket1 in clientSockets)
+        //        {
+        //            socket1.Send(data);
+        //        }
+        //        Console.WriteLine(CardValue);
+
+
+        //    }
+        //}
     }
 }
