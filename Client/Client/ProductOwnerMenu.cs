@@ -17,7 +17,7 @@ namespace Client
             {
 
             }
-            while (!ClientApp.ReceiveResult())
+            while (ClientApp.ReceiveResult())
             {
 
             }

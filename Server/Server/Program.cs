@@ -111,12 +111,10 @@ namespace Server
             Console.WriteLine("Otrzymany tekst: " + text);
             
             var resultCard = JsonSerializer.Deserialize<CardPacksRequest>(text);
-            
-            if (resultCard.state == State.Cards)
+            if (resultCard.state == State.Cardsend)
             {
                 CardCommunication(resultCard);
             }
-
 
             var resultI = JsonSerializer.Deserialize<EstimatedIRequest>(text);
             if (resultI.state == State.Estiamtion)
@@ -125,10 +123,13 @@ namespace Server
             }
 
             var resultlogin = JsonSerializer.Deserialize<LoginRequest>(text);
+            
             if (resultlogin.state==State.Login)
             {
                 EmailCheckCallBack(current, resultlogin);
             }
+            
+
 
             current.BeginReceive(buffer, 0, BUFFER_SIZE, SocketFlags.None, ReceiveCallback, current);
         }
@@ -188,8 +189,10 @@ namespace Server
                 {
                     ID = resultI.ID,
                     Input = resultI.Input,
+                    state=State.Estiamtion,
                 });
                 byte[] data = Encoding.ASCII.GetBytes(jsonResponse2);
+                
 
                 foreach (var socket in clientSockets)
                 {
@@ -200,45 +203,22 @@ namespace Server
 
         private static void CardCommunication(CardPacksRequest resultCard)
         {
-                var jsonresponse3 = JsonSerializer.Serialize<CardPacksResponse>(new CardPacksResponse()
-                {
-                    Cards = resultCard.CardValue
-                });
 
-            var jsonString = JsonSerializer.Serialize(resultCard);
-            var CardObject = System.Text.Json.JsonDocument.Parse(jsonString);
-            var CardValue = CardObject.RootElement.GetProperty("CardValue");
-
-            byte[] data = Encoding.ASCII.GetBytes(jsonresponse3);
-
-            foreach (var socket1 in clientSockets)
+            if (resultCard.CardValue != null)
             {
-                socket1.Send(data);
+                var jsonResponse2 = JsonSerializer.Serialize<CardPacksResponse>(new CardPacksResponse()
+                {
+                    Cards = resultCard.CardValue,
+                    state = State.Cardsend
+                    
+                });
+                byte[] data = Encoding.ASCII.GetBytes(jsonResponse2);
+                //int intdata = Convert.ToInt32(data);
+                foreach (var socket in clientSockets)
+                {
+                    socket.Send(data);
+                }
             }
-
         }
-        //private static void CardResult(CardPacksRequest result)
-        //{
-        //    {
-        //        var jsonString = JsonSerializer.Serialize(result);
-
-        //        var CardObject = System.Text.Json.JsonDocument.Parse(jsonString);
-        //        var CardValue = CardObject.RootElement.GetProperty("CardValue");
-
-        //        var jsonresponse3 = JsonSerializer.Serialize<VoteResult>(new VoteResult()
-        //        {
-        //            Result = result.CardValue
-        //        });
-        //        byte[] data = Encoding.ASCII.GetBytes(jsonresponse3);
-
-        //        foreach (var socket1 in clientSockets)
-        //        {
-        //            socket1.Send(data);
-        //        }
-        //        Console.WriteLine(CardValue);
-
-
-        //    }
-        //}
     }
 }

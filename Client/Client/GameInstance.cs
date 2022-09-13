@@ -12,11 +12,14 @@ namespace Client
         public static void ScrumMenu()
         {
             Console.Title = "ScrumMaster";
+            while(!ClientApp.ReceiveID())
+            {
+            }
             ClientApp.SendCard();
             while (!ClientApp.ReceiveResult())
-            {
-
+            { 
             }
+            Console.ReadKey();
 
         }
     }

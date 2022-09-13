@@ -49,9 +49,10 @@ namespace Client
         {
             Console.WriteLine(@"Podaj swój e-mail by zalogować się do konta");
             SendMail();
-            while (!ReceiveResponse())
+            while (!Receivemail())
             {
             }
+            StateCheck();
 
         }
         public static void SendCard()
@@ -65,7 +66,7 @@ namespace Client
             CardPacksRequest CardRequest = new()
             {
                 CardValue = value,
-                state = State.Cards
+                state = State.Cardsend
             };
 
             string json = JsonSerializer.Serialize(CardRequest);
@@ -82,7 +83,7 @@ namespace Client
         }
         public static void SendIRequest(string IDProblem, string ProblemTxt)
         {
-            EstimatedIRequest EstimatedIRequest = new EstimatedIRequest()
+            EstimatedIRequest EstimatedIRequest = new()
             {
                 ID = IDProblem,
                 Input = ProblemTxt,
@@ -101,7 +102,7 @@ namespace Client
 
         private static void SendLoginRequest(string text)
         {
-            LoginRequest loginRequest = new LoginRequest()
+            LoginRequest loginRequest = new()
             {
                 Email = text,
                 state = State.Login
@@ -121,12 +122,47 @@ namespace Client
             byte[] buffer = Encoding.ASCII.GetBytes(text);
             ClientSocket.Send(buffer, 0, buffer.Length, SocketFlags.None);
         }
-        public static bool ReceiveCard()
+        public static void StateCheck()
         {
             var buffer = new byte[2048];
+            int received = ClientSocket.Receive(buffer, SocketFlags.None);
+            var data = new byte[received];
+            Array.Copy(buffer, data, received);
+            string text = Encoding.ASCII.GetString(data);
 
+            var resultCard = JsonSerializer.Deserialize<CardPacksRequest>(text);
+            if (resultCard.state == State.Cardsend)
+            {
+                ReceiveResult();
+                
+            }
+
+            var resultI = JsonSerializer.Deserialize<EstimatedIRequest>(text);
+            if (resultI.state == State.Estiamtion)
+            {
+                ReceiveID();
+               
+            }
+
+            var resultlogin = JsonSerializer.Deserialize<LoginRequest>(text);
+            if (resultlogin.state == State.Login)
+            {
+                Receivemail();
+               
+            }
+            
+        }
+
+        public static bool Receivemail()//mail
+        {
+            //var buffer = new byte[2048];
+            //int received = ClientSocket.Receive(buffer, SocketFlags.None);
+            //if (received == 0) return false;
+            //var data = new byte[received];
+            //Array.Copy(buffer, data, received);
+            //string text = Encoding.ASCII.GetString(data);
+            var buffer = new byte[2048];
             int received = 0;
-
             if (ClientSocket.Available > 0)
             {
                 received = ClientSocket.Receive(buffer, SocketFlags.None);
@@ -135,27 +171,6 @@ namespace Client
             var data = new byte[received];
             Array.Copy(buffer, data, received);
             string text = Encoding.ASCII.GetString(data);
-
-
-            var resultCard = JsonSerializer.Deserialize<CardPacksResponse>(text);
-            if (resultCard != null)
-            {
-                Console.WriteLine(resultCard);
-            }
-            return false;   
-
-        }
-
-        public static bool ReceiveResponse()//mail
-        {
-            var buffer = new byte[2048];
-            int received = ClientSocket.Receive(buffer, SocketFlags.None);
-            if (received == 0) return false;
-            var data = new byte[received];
-            Array.Copy(buffer, data, received);
-            string text = Encoding.ASCII.GetString(data);
-
-
 
             var result = JsonSerializer.Deserialize<LoginResponse>(text);
 
@@ -183,33 +198,31 @@ namespace Client
         public static bool ReceiveID()
         {
             var buffer = new byte[2048];
-
             int received = 0;
-
             if (ClientSocket.Available > 0)
             {
                 received = ClientSocket.Receive(buffer, SocketFlags.None);
             }
-
             if (received == 0) return false;
             var data = new byte[received];
             Array.Copy(buffer, data, received);
             string text = Encoding.ASCII.GetString(data);
 
+
             var resultI = JsonSerializer.Deserialize<EstimatedIResponse>(text);
+            
             if (resultI.ID != null)
             {
                 Console.Clear();
                 Console.WriteLine("ID Estymowanego tematu: "+resultI.ID +"\nEstymowany temat: "+ resultI.Input);
             }
+            
             return true;
         }
         public static bool ReceiveResult()
         {
             var buffer = new byte[2048];
-
             int received = 0;
-
             if (ClientSocket.Available > 0)
             {
                 received = ClientSocket.Receive(buffer, SocketFlags.None);
@@ -219,11 +232,12 @@ namespace Client
             Array.Copy(buffer, data, received);
             string text = Encoding.ASCII.GetString(data);
 
-            var receiveresult = JsonSerializer.Deserialize<VoteResult>(text);
-            if (receiveresult.Result != null)
+            var receiveresult = JsonSerializer.Deserialize<CardPacksResponse>(text);
+  
+            if (receiveresult.Cards !=null)
             {
-                Console.WriteLine("Wynik głosowania: " + receiveresult.Result);
-            }
+                Console.WriteLine("Wynik głosowania: " + receiveresult.Cards);
+            }  
             return true;
         }
     }
