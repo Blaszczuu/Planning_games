@@ -1,6 +1,7 @@
 ﻿using DataTransferObjects;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -11,7 +12,6 @@ namespace Server
 {
     public class Program
     {
-        
         private static readonly Socket serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
         private static readonly List<Socket> clientSockets = new List<Socket>();
         private const int BUFFER_SIZE = 2048;
@@ -82,8 +82,8 @@ namespace Server
             int received;
             string IPAddress = "";
 
-            IPHostEntry Host = default;
-            string Hostname = null;
+            IPHostEntry? Host = default;
+            string? Hostname = null;
             Hostname = System.Environment.MachineName;
             Host = Dns.GetHostEntry(Hostname);
             foreach (IPAddress IP in Host.AddressList)
@@ -95,12 +95,12 @@ namespace Server
             }
             try
             {
-                received = current.EndReceive(AR);
+                received = current!.EndReceive(AR);
             }
             catch (SocketException)
             {
                 Console.WriteLine("Klient zamknął aplikacje, adres IP klienta: "+ IPAddress);
-                current.Close();
+                current!.Close();
                 clientSockets.Remove(current);
                 return;
             }
@@ -111,33 +111,29 @@ namespace Server
             Console.WriteLine("Otrzymany tekst: " + text);
             
             var resultCard = JsonSerializer.Deserialize<CardPacksRequest>(text);
-            if (resultCard.state == State.Cardsend)
+            if (resultCard!.state == State.Cardsend)
             {
                 CardCommunication(resultCard);
             }
 
             var resultI = JsonSerializer.Deserialize<EstimatedIRequest>(text);
-            if (resultI.state == State.Estiamtion)
+            if (resultI!.state == State.Estiamtion)
             {
                 ProblemEstimation(resultI);
             }
 
             var resultlogin = JsonSerializer.Deserialize<LoginRequest>(text);
-            
-            if (resultlogin.state==State.Login)
+            if (resultlogin!.state==State.Login)
             {
                 EmailCheckCallBack(current, resultlogin);
             }
-            
-
-
             current.BeginReceive(buffer, 0, BUFFER_SIZE, SocketFlags.None, ReceiveCallback, current);
         }
 
         private static void EmailCheckCallBack(Socket current, LoginRequest? resultlogin)
         {
             
-                if (resultlogin.Email == "sebastian@abb.pl")
+                if (resultlogin!.Email == "sebastian@abb.pl")
                 {
 
                     var jsonResponse = JsonSerializer.Serialize<LoginResponse>(new LoginResponse()
@@ -164,7 +160,7 @@ namespace Server
                     current.Send(data);
 
                 }
-                else
+                else if(resultlogin.Email != null)
                 {
                     var response = new LoginResponse()
                     {
@@ -183,7 +179,7 @@ namespace Server
 
         private static void ProblemEstimation(EstimatedIRequest? resultI)
         {
-            if (resultI.ID != null)
+            if (resultI!.ID != null)
             {
                 var jsonResponse2 = JsonSerializer.Serialize<EstimatedIResponse>(new EstimatedIResponse()
                 {
@@ -200,20 +196,28 @@ namespace Server
                 }
             }
         }
-
+        static List<double> Resultlist = new();
         private static void CardCommunication(CardPacksRequest resultCard)
         {
-
-            if (resultCard.CardValue != null)
+            double r = resultCard.CardValue;
+            for (int i = 0; i < Resultlist.Count; i++)
+            {
+                r += Resultlist.Count / Resultlist.Count;
+            }
+            //Resultlist.Add(resultCard.CardValue);
+            //foreach (var x in Resultlist)
+            //{
+            //    Console.WriteLine(x);
+            //}
+            if (resultCard.CardValue > 0)
             {
                 var jsonResponse2 = JsonSerializer.Serialize<CardPacksResponse>(new CardPacksResponse()
                 {
                     Cards = resultCard.CardValue,
                     state = State.Cardsend
-                    
+
                 });
                 byte[] data = Encoding.ASCII.GetBytes(jsonResponse2);
-                //int intdata = Convert.ToInt32(data);
                 foreach (var socket in clientSockets)
                 {
                     socket.Send(data);

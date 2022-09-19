@@ -1,5 +1,4 @@
-
-﻿using System.Net.Sockets;
+using System.Net.Sockets;
 using System.Text;
 using System.ComponentModel.DataAnnotations;
 using DataTransferObjects;
@@ -24,7 +23,7 @@ namespace Client
         {
             int attempts = 0;
             Console.WriteLine("Podaj adres IP do którego chcesz się połączyć");
-            String host = Console.ReadLine();
+            String ?host = Console.ReadLine();
 
             while (!ClientSocket.Connected)
             {
@@ -52,8 +51,6 @@ namespace Client
             while (!Receivemail())
             {
             }
-            StateCheck();
-
         }
         public static void SendCard()
         {
@@ -76,9 +73,9 @@ namespace Client
         public static void SendI()
         {
             Console.WriteLine("Podaj ID Rozgrywki: ");
-            string ID = Console.ReadLine();
+            string ?ID = Console.ReadLine();
             Console.WriteLine("Podaj Temat Rozgrywki: ");
-            string Txt = Console.ReadLine();
+            string ?Txt = Console.ReadLine();
             SendIRequest(ID, Txt);
         }
         public static void SendIRequest(string IDProblem, string ProblemTxt)
@@ -96,7 +93,7 @@ namespace Client
         public static void SendMail()//wysyłanie
         {
             Console.Write("Wyślij do servera: ");
-            string email = Console.ReadLine();
+            string ?email = Console.ReadLine();
             SendLoginRequest(email);
         }
 
@@ -122,45 +119,9 @@ namespace Client
             byte[] buffer = Encoding.ASCII.GetBytes(text);
             ClientSocket.Send(buffer, 0, buffer.Length, SocketFlags.None);
         }
-        public static void StateCheck()
-        {
-            var buffer = new byte[2048];
-            int received = ClientSocket.Receive(buffer, SocketFlags.None);
-            var data = new byte[received];
-            Array.Copy(buffer, data, received);
-            string text = Encoding.ASCII.GetString(data);
-
-            var resultCard = JsonSerializer.Deserialize<CardPacksRequest>(text);
-            if (resultCard.state == State.Cardsend)
-            {
-                ReceiveResult();
-                
-            }
-
-            var resultI = JsonSerializer.Deserialize<EstimatedIRequest>(text);
-            if (resultI.state == State.Estiamtion)
-            {
-                ReceiveID();
-               
-            }
-
-            var resultlogin = JsonSerializer.Deserialize<LoginRequest>(text);
-            if (resultlogin.state == State.Login)
-            {
-                Receivemail();
-               
-            }
-            
-        }
-
+        
         public static bool Receivemail()//mail
         {
-            //var buffer = new byte[2048];
-            //int received = ClientSocket.Receive(buffer, SocketFlags.None);
-            //if (received == 0) return false;
-            //var data = new byte[received];
-            //Array.Copy(buffer, data, received);
-            //string text = Encoding.ASCII.GetString(data);
             var buffer = new byte[2048];
             int received = 0;
             if (ClientSocket.Available > 0)
@@ -174,7 +135,7 @@ namespace Client
 
             var result = JsonSerializer.Deserialize<LoginResponse>(text);
 
-            if (result.role == Role.ScrumMaster)
+            if (result!.role == Role.ScrumMaster)
             {
                 Console.Clear();
                 Console.Write(result.email + " zalogowany jako " + result.role);
@@ -211,7 +172,7 @@ namespace Client
 
             var resultI = JsonSerializer.Deserialize<EstimatedIResponse>(text);
             
-            if (resultI.ID != null)
+            if (resultI!.ID != null)
             {
                 Console.Clear();
                 Console.WriteLine("ID Estymowanego tematu: "+resultI.ID +"\nEstymowany temat: "+ resultI.Input);
@@ -234,7 +195,7 @@ namespace Client
 
             var receiveresult = JsonSerializer.Deserialize<CardPacksResponse>(text);
   
-            if (receiveresult.Cards !=null)
+            if (receiveresult!.Cards > 0)
             {
                 Console.WriteLine("Wynik głosowania: " + receiveresult.Cards);
             }  

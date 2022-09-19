@@ -1,4 +1,3 @@
-
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +13,9 @@ namespace Client
             Console.Title = "ScrumMaster";
             while(!ClientApp.ReceiveID())
             {
+                
             }
+            
             ClientApp.SendCard();
             while (!ClientApp.ReceiveResult())
             { 
