@@ -32,7 +32,7 @@ namespace Client
                     attempts++;
                     Console.WriteLine("Próba połączenia " + attempts);
 
-                    ClientSocket.Connect(host, PORT);
+                    ClientSocket.Connect(host!, PORT);
                 }
                 catch (SocketException)
                 {
@@ -98,7 +98,7 @@ namespace Client
         {
             Console.Write("Wyślij do servera: ");
             string ?email = Console.ReadLine();
-            SendLoginRequest(email);
+            SendLoginRequest(email!);
         }
 
         private static void SendLoginRequest(string text)
@@ -138,7 +138,6 @@ namespace Client
             string text = Encoding.ASCII.GetString(data);
 
             var result = JsonSerializer.Deserialize<LoginResponse>(text);
-
             if (result!.role == Role.ScrumMaster)
             {
                 Console.Clear();
@@ -157,7 +156,6 @@ namespace Client
                 Console.Write(result.email + " zalogowany jako " + result.role);
                 DevMenu.DevM();
             }
-
             return false;
         }
         public static bool ReceiveID()
@@ -173,15 +171,12 @@ namespace Client
             Array.Copy(buffer, data, received);
             string text = Encoding.ASCII.GetString(data);
 
-
             var resultI = JsonSerializer.Deserialize<EstimatedIResponse>(text);
-            
             if (resultI!.ID != null)
             {
                 Console.Clear();
                 Console.WriteLine("ID Estymowanego tematu: "+resultI.ID +"\nEstymowany temat: "+ resultI.Input);
             }
-            
             return true;
         }
         public static bool ReceiveResult()
@@ -198,8 +193,7 @@ namespace Client
             string text = Encoding.ASCII.GetString(data);
 
             var receiveresult = JsonSerializer.Deserialize<CardPacksResponse>(text);
-  
-            if (receiveresult!.CardResult != 0)
+            if (receiveresult!.CardResult > -1)
             {
                 Console.WriteLine("Wynik głosowania: " + receiveresult.CardResult);
             }  

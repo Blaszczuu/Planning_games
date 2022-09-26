@@ -7,7 +7,6 @@ using System.Net.Sockets;
 using System.Text;
 using System.Text.Json;
 
-
 namespace Server
 {
     public class Program
@@ -158,7 +157,6 @@ namespace Server
 
                     byte[] data = Encoding.ASCII.GetBytes(jsonResponse);
                     current.Send(data);
-
                 }
                 else if(resultlogin.Email != null)
                 {
@@ -168,7 +166,6 @@ namespace Server
                         role = Role.Developer,
 
                     };
-
                     var jsonResponse = JsonSerializer.Serialize<LoginResponse>(response);
 
                     byte[] data = Encoding.ASCII.GetBytes(jsonResponse);
@@ -187,7 +184,6 @@ namespace Server
                     state=State.Estiamtion,
                 });
                 byte[] data = Encoding.ASCII.GetBytes(jsonResponse2);
-                
 
                 foreach (var socket in clientSockets)
                 {
@@ -199,19 +195,20 @@ namespace Server
         private static void CardCommunication(CardPacksRequest resultCard)
         {
             Resultlist.Add(resultCard.CardValue);
-            if (clientSockets.Count == Resultlist.Count)
+            if (clientSockets.Count  == Resultlist.Count)
             {
                 int r = Resultlist.Count;
                 int total = Resultlist.Sum(x => Convert.ToInt32(x));
-                r = total / Resultlist.Count; var list = new[] { 0,1,2,3,5,8,13,21,34,55,89};
+                r = total / Resultlist.Count; 
+                var fibo = new[] {89,55,34,21,13,8,5,3,2,1,0};
                 var input = r;
 
-                var diffList = from number in list
+                var diffList = from number in fibo
                                select new
                                {
                                    number,
                                    difference = Math.Abs(number - input)
-                               };
+                               };                
                 var result = (from diffItem in diffList
                               orderby diffItem.difference
                               select diffItem).First().number;
@@ -227,7 +224,6 @@ namespace Server
                     socket.Send(data);
                 }
                 Resultlist.Clear();
-            
             }
         }
     }
