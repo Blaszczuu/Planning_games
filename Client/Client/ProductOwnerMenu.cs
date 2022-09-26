@@ -13,13 +13,16 @@ namespace Client
         {
             Console.Title = "ProductOwner";
             Console.WriteLine("\nOczekiwanie na wysłanie tematu przez ScrumMastera");
-            while (!ClientApp.ReceiveID())
+            while (true)
             {
+                while (!ClientApp.ReceiveID())
+                {
 
-            }
-            while (ClientApp.ReceiveResult())
-            {
+                }
+                while (!ClientApp.ReceiveResult())
+                {
 
+                }
             }
         }
     }

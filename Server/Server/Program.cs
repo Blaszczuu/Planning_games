@@ -64,7 +64,7 @@ namespace Server
             Host = Dns.GetHostEntry(Hostname);
             foreach (IPAddress IP in Host.AddressList)
             {
-                if (IP.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
+                if (IP.AddressFamily == AddressFamily.InterNetwork)
                 {
                     IPAddress = Convert.ToString(IP);
                 }
@@ -174,7 +174,6 @@ namespace Server
                     byte[] data = Encoding.ASCII.GetBytes(jsonResponse);
                     current.Send(data);
                 }
-            
         }
 
         private static void ProblemEstimation(EstimatedIRequest? resultI)
@@ -199,29 +198,24 @@ namespace Server
         static List<double> Resultlist = new();
         private static void CardCommunication(CardPacksRequest resultCard)
         {
-            double r = resultCard.CardValue;
-            for (int i = 0; i < Resultlist.Count; i++)
+            Resultlist.Add(resultCard.CardValue);
+            if (clientSockets.Count == Resultlist.Count)
             {
-                r += Resultlist.Count / Resultlist.Count;
-            }
-            //Resultlist.Add(resultCard.CardValue);
-            //foreach (var x in Resultlist)
-            //{
-            //    Console.WriteLine(x);
-            //}
-            if (resultCard.CardValue > 0)
-            {
-                var jsonResponse2 = JsonSerializer.Serialize<CardPacksResponse>(new CardPacksResponse()
+                int r = Resultlist.Count;
+                
+                    r = Resultlist.Capacity + Resultlist.Count / Resultlist.Count;
+                var jsonResponse4 = JsonSerializer.Serialize<CardPacksResponse>(new CardPacksResponse()
                 {
-                    Cards = resultCard.CardValue,
-                    state = State.Cardsend
-
+                   CardResult= r
                 });
-                byte[] data = Encoding.ASCII.GetBytes(jsonResponse2);
+                Console.WriteLine(r);
+                byte[] data = Encoding.ASCII.GetBytes(jsonResponse4);
                 foreach (var socket in clientSockets)
                 {
                     socket.Send(data);
                 }
+                Resultlist.Clear();
+            
             }
         }
     }

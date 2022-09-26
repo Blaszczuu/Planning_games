@@ -12,6 +12,7 @@ namespace DataTransferObjects
     {
         public int Cards { get; set; }
         public State state { get; set; }
+        public int CardResult { get; set; }
     }
 
 }

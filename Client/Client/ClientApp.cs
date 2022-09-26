@@ -195,9 +195,9 @@ namespace Client
 
             var receiveresult = JsonSerializer.Deserialize<CardPacksResponse>(text);
   
-            if (receiveresult!.Cards > 0)
+            if (receiveresult!.CardResult != 0)
             {
-                Console.WriteLine("Wynik głosowania: " + receiveresult.Cards);
+                Console.WriteLine("Wynik głosowania: " + receiveresult.CardResult);
             }  
             return true;
         }
