@@ -202,13 +202,25 @@ namespace Server
             if (clientSockets.Count == Resultlist.Count)
             {
                 int r = Resultlist.Count;
-                
-                    r = Resultlist.Capacity + Resultlist.Count / Resultlist.Count;
+                int total = Resultlist.Sum(x => Convert.ToInt32(x));
+                r = total / Resultlist.Count; var list = new[] { 0,1,2,3,5,8,13,21,34,55,89};
+                var input = r;
+
+                var diffList = from number in list
+                               select new
+                               {
+                                   number,
+                                   difference = Math.Abs(number - input)
+                               };
+                var result = (from diffItem in diffList
+                              orderby diffItem.difference
+                              select diffItem).First().number;
+
                 var jsonResponse4 = JsonSerializer.Serialize<CardPacksResponse>(new CardPacksResponse()
                 {
-                   CardResult= r
+                   CardResult= result,
+                   state= State.Cardresult
                 });
-                Console.WriteLine(r);
                 byte[] data = Encoding.ASCII.GetBytes(jsonResponse4);
                 foreach (var socket in clientSockets)
                 {
