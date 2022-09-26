@@ -55,7 +55,11 @@ namespace Client
         public static void SendCard()
         {
             Console.Write("Wybierz Kartę: ");
-            int card = int.Parse(Console.ReadLine());
+            int card;
+            while (!int.TryParse(Console.ReadLine(), out card))
+            {
+                Console.Write("Wprowadzony tekst nie jest wartością, wprowadź wartość karty: ");
+            }
             SendCardReq(card);
         }
         private static void SendCardReq(int value)
@@ -76,7 +80,7 @@ namespace Client
             string ?ID = Console.ReadLine();
             Console.WriteLine("Podaj Temat Rozgrywki: ");
             string ?Txt = Console.ReadLine();
-            SendIRequest(ID, Txt);
+            SendIRequest(ID!, Txt!);
         }
         public static void SendIRequest(string IDProblem, string ProblemTxt)
         {

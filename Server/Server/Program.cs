@@ -195,7 +195,7 @@ namespace Server
                 }
             }
         }
-        static List<double> Resultlist = new();
+        static readonly List<double> Resultlist = new();
         private static void CardCommunication(CardPacksRequest resultCard)
         {
             Resultlist.Add(resultCard.CardValue);
