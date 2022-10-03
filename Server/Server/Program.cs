@@ -1,20 +1,24 @@
 ﻿using DataTransferObjects;
+using Server;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Net.Http.Headers;
 using System.Net.Sockets;
+using System.Reflection.Metadata.Ecma335;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Text.Json;
 using static System.Net.Mime.MediaTypeNames;
+
 
 namespace Server
 {
     public class Program
     {
         private static readonly Socket serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-        //private static readonly List<Socket> clientSockets = new List<Socket>();
-        private static readonly List<Client> connectedClients = new List<Client>();
+        private static List<Client> connectedClients = new List<Client>();
         private const int BUFFER_SIZE = 2048;
         private const int PORT = 100;
         public static readonly byte[] buffer = new byte[BUFFER_SIZE];
@@ -23,7 +27,7 @@ namespace Server
         {
             Console.Title = "Server: " + Dns.GetHostEntry(Dns.GetHostName()).AddressList.First(a => a.AddressFamily == AddressFamily.InterNetwork);
             SetupServer();
-            Console.ReadLine(); 
+            Console.ReadLine();
             CloseAllSockets();
         }
 
@@ -70,11 +74,8 @@ namespace Server
                     IPAddress = Convert.ToString(IP);
                 }
             }
-
-            //clientSockets.Add(socket);
-            // connectedClients.Add(socket, Role.Developer):
             socket.BeginReceive(buffer, 0, BUFFER_SIZE, SocketFlags.None, ReceiveCallback, socket);
-        
+
             Console.WriteLine("Klient połączony, adres IP klienta: " + IPAddress);
             serverSocket.BeginAccept(AcceptCallback, null);
         }
@@ -101,11 +102,10 @@ namespace Server
             }
             catch (SocketException)
             {
-                Console.WriteLine("Klient zamknął aplikacje, adres IP klienta: "+ IPAddress);
+                Console.WriteLine("Klient zamknął aplikacje, adres IP klienta: " + IPAddress);
                 current!.Close();
-                // TODO: hack
                 Client clientToDisconnect = connectedClients.Where(c => c.Socket == current).First();
-                connectedClients.Remove(clientToDisconnect);  
+                connectedClients.Remove(clientToDisconnect);
                 return;
             }
 
@@ -113,7 +113,7 @@ namespace Server
             Array.Copy(buffer, recBuf, received);
             string text = Encoding.ASCII.GetString(recBuf);
             Console.WriteLine("Otrzymany tekst: " + text);
-            
+
             var resultCard = JsonSerializer.Deserialize<CardPacksRequest>(text);
             if (resultCard!.state == State.Cardsend)
             {
@@ -127,7 +127,7 @@ namespace Server
             }
 
             var resultlogin = JsonSerializer.Deserialize<LoginRequest>(text);
-            if (resultlogin!.state==State.Login)
+            if (resultlogin!.state == State.Login)
             {
                 EmailCheckCallBack(current, resultlogin);
             }
@@ -136,51 +136,53 @@ namespace Server
 
         private static void EmailCheckCallBack(Socket current, LoginRequest? resultlogin)
         {
-            
-                if (resultlogin!.Email == "sebastian@abb.pl")
-                {
-                
-                    var jsonResponse = JsonSerializer.Serialize<LoginResponse>(new LoginResponse()
-                    {
-                        email = resultlogin.Email,
-                        role = Role.ScrumMaster,
 
-                    });
+            if (resultlogin!.Email == "sebastian@abb.pl")
+            {
+
+                var jsonResponse = JsonSerializer.Serialize<LoginResponse>(new LoginResponse()
+                {
+                    email = resultlogin.Email,
+                    role = Role.ScrumMaster,
+
+                });
 
                 connectedClients.Add(new Client(Role.ScrumMaster, current));
 
-                    byte[] data = Encoding.ASCII.GetBytes(jsonResponse);
-                    current.Send(data);
-                }
-                else if (resultlogin.Email == "kacper@abb.pl")
+                byte[] data = Encoding.ASCII.GetBytes(jsonResponse);
+                current.Send(data);
+            }
+            else if (resultlogin.Email == "kacper@abb.pl")
+            {
+                var response = new LoginResponse()
                 {
-                    var response = new LoginResponse()
-                    {
-                        email = resultlogin.Email,
-                        role = Role.ProductOwner,
+                    email = resultlogin.Email,
+                    role = Role.ProductOwner,
 
-                    };
-                    var jsonResponse = JsonSerializer.Serialize<LoginResponse>(response);
+                };
+                var jsonResponse = JsonSerializer.Serialize<LoginResponse>(response);
+                connectedClients.Add(new Client(Role.ProductOwner, current));
 
-                    byte[] data = Encoding.ASCII.GetBytes(jsonResponse);
-                    current.Send(data);
-                }
-                else if(resultlogin.Email != null)
+                byte[] data = Encoding.ASCII.GetBytes(jsonResponse);
+                current.Send(data);
+            }
+            else if (resultlogin.Email != null)
+            {
+
+                var response = new LoginResponse()
                 {
-                
-                    var response = new LoginResponse()
-                    {
-                        email = resultlogin.Email,
-                        role = Role.Developer,
+                    email = resultlogin.Email,
+                    role = Role.Developer,
 
-                    };
-                    var jsonResponse = JsonSerializer.Serialize<LoginResponse>(response);
+                };
+                var jsonResponse = JsonSerializer.Serialize<LoginResponse>(response);
+                connectedClients.Add(new Client(Role.Developer, current));
 
-                    byte[] data = Encoding.ASCII.GetBytes(jsonResponse);
-                    current.Send(data);
-                }
+                byte[] data = Encoding.ASCII.GetBytes(jsonResponse);
+                current.Send(data);
+            }
         }
-        static int PlayersCount;
+        public static int PlayersCount = 0;
         private static void ProblemEstimation(EstimatedIRequest? resultI)
         {
             if (resultI!.ID != null)
@@ -192,14 +194,31 @@ namespace Server
                     state=State.Estiamtion,
                 });
                 byte[] data = Encoding.ASCII.GetBytes(jsonResponse2);
+                
 
                 foreach (var socket in connectedClients.Select(c => c.Socket))
                 {
                     socket.Send(data);
+                    var UserResult = connectedClients.Where(a => a.ClientRole == Role.ScrumMaster);
+                    int x1 = UserResult.ToArray().Length;
+                    for (var i = 0; i < x1; i++)
+                    {
+                        PlayersCount++;
+                    }
+                    //foreach (var n in UserResult)
+                    //{
+                    //    PlayersCount++;
+                    //}
+
+                    var userResult2 = connectedClients.Where(a => a.ClientRole == Role.Developer);
+                    int x =userResult2.ToArray().Length;
+                    for (var i =0; i<x;i++)
+                    {
+                        PlayersCount++;
+                    }
+                    
                 }
-                // Jeżeli wysylam do dev. lub scrum mastera
-                // { licznik++ }
-            
+                
             }
         }
        
@@ -207,6 +226,7 @@ namespace Server
         private static void CardCommunication(CardPacksRequest resultCard)
         {
             Resultlist.Add(resultCard.CardValue);
+            
             if (PlayersCount == Resultlist.Count)
             {
                 int r = Resultlist.Count;
@@ -236,6 +256,8 @@ namespace Server
                     socket.Send(data);
                 }
                 Resultlist.Clear();
+                PlayersCount=0;
+
             }
         }
     }

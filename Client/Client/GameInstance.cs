@@ -15,7 +15,7 @@ namespace Client
             {
                 
             }
-            
+            Console.WriteLine("\n");
             ClientApp.SendCard();
             while (!ClientApp.ReceiveResult())
             { 

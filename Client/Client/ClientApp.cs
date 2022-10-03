@@ -176,8 +176,11 @@ namespace Client
             {
                 Console.Clear();
                 Console.WriteLine("ID Estymowanego tematu: "+resultI.ID +"\nEstymowany temat: "+ resultI.Input);
+
+                return true;
             }
-            return true;
+
+            return false;
         }
         public static bool ReceiveResult()
         {
