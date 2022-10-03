@@ -6,13 +6,15 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Text.Json;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Server
 {
     public class Program
     {
         private static readonly Socket serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-        private static readonly List<Socket> clientSockets = new List<Socket>();
+        //private static readonly List<Socket> clientSockets = new List<Socket>();
+        private static readonly List<Client> connectedClients = new List<Client>();
         private const int BUFFER_SIZE = 2048;
         private const int PORT = 100;
         public static readonly byte[] buffer = new byte[BUFFER_SIZE];
@@ -36,7 +38,7 @@ namespace Server
 
         public static void CloseAllSockets()//wylaczenie socketow
         {
-            foreach (Socket socket in clientSockets)
+            foreach (Socket socket in connectedClients.Select(c => c.Socket))
             {
                 socket.Shutdown(SocketShutdown.Both);
                 socket.Close();
@@ -69,7 +71,8 @@ namespace Server
                 }
             }
 
-            clientSockets.Add(socket);
+            //clientSockets.Add(socket);
+            // connectedClients.Add(socket, Role.Developer):
             socket.BeginReceive(buffer, 0, BUFFER_SIZE, SocketFlags.None, ReceiveCallback, socket);
         
             Console.WriteLine("Klient połączony, adres IP klienta: " + IPAddress);
@@ -100,7 +103,9 @@ namespace Server
             {
                 Console.WriteLine("Klient zamknął aplikacje, adres IP klienta: "+ IPAddress);
                 current!.Close();
-                clientSockets.Remove(current);
+                // TODO: hack
+                Client clientToDisconnect = connectedClients.Where(c => c.Socket == current).First();
+                connectedClients.Remove(clientToDisconnect);  
                 return;
             }
 
@@ -134,13 +139,15 @@ namespace Server
             
                 if (resultlogin!.Email == "sebastian@abb.pl")
                 {
-
+                
                     var jsonResponse = JsonSerializer.Serialize<LoginResponse>(new LoginResponse()
                     {
                         email = resultlogin.Email,
                         role = Role.ScrumMaster,
 
                     });
+
+                connectedClients.Add(new Client(Role.ScrumMaster, current));
 
                     byte[] data = Encoding.ASCII.GetBytes(jsonResponse);
                     current.Send(data);
@@ -160,6 +167,7 @@ namespace Server
                 }
                 else if(resultlogin.Email != null)
                 {
+                
                     var response = new LoginResponse()
                     {
                         email = resultlogin.Email,
@@ -172,7 +180,7 @@ namespace Server
                     current.Send(data);
                 }
         }
-
+        static int PlayersCount;
         private static void ProblemEstimation(EstimatedIRequest? resultI)
         {
             if (resultI!.ID != null)
@@ -185,17 +193,21 @@ namespace Server
                 });
                 byte[] data = Encoding.ASCII.GetBytes(jsonResponse2);
 
-                foreach (var socket in clientSockets)
+                foreach (var socket in connectedClients.Select(c => c.Socket))
                 {
                     socket.Send(data);
                 }
+                // Jeżeli wysylam do dev. lub scrum mastera
+                // { licznik++ }
+            
             }
         }
+       
         static readonly List<double> Resultlist = new();
         private static void CardCommunication(CardPacksRequest resultCard)
         {
             Resultlist.Add(resultCard.CardValue);
-            if (clientSockets.Count  == Resultlist.Count)
+            if (PlayersCount == Resultlist.Count)
             {
                 int r = Resultlist.Count;
                 int total = Resultlist.Sum(x => Convert.ToInt32(x));
@@ -219,7 +231,7 @@ namespace Server
                    state= State.Cardresult
                 });
                 byte[] data = Encoding.ASCII.GetBytes(jsonResponse4);
-                foreach (var socket in clientSockets)
+                foreach (var socket in connectedClients.Select(c => c.Socket))
                 {
                     socket.Send(data);
                 }
