@@ -183,6 +183,7 @@ namespace Server
             }
         }
         public static int PlayersCount = 0;
+        //public List<int> Playerlist = new List<int>();
         private static void ProblemEstimation(EstimatedIRequest? resultI)
         {
             if (resultI!.ID != null)
@@ -200,23 +201,11 @@ namespace Server
                 {
                     socket.Send(data);
                     var UserResult = connectedClients.Where(a => a.ClientRole == Role.ScrumMaster);
-                    int x1 = UserResult.ToArray().Length;
-                    for (var i = 0; i < x1; i++)
-                    {
-                        PlayersCount++;
-                    }
-                    //foreach (var n in UserResult)
-                    //{
-                    //    PlayersCount++;
-                    //}
+                    int ur1 = UserResult.Take(Range.All).ToArray().Length;
 
                     var userResult2 = connectedClients.Where(a => a.ClientRole == Role.Developer);
-                    int x =userResult2.ToArray().Length;
-                    for (var i =0; i<x;i++)
-                    {
-                        PlayersCount++;
-                    }
-                    //problem ze liczba graczy^ liczba gracz (bug w obliczaniu)
+                    int ur = userResult2.Take(Range.All).ToArray().Length;
+                    PlayersCount = ur +ur1;
                 }
                 
             }
