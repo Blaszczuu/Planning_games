@@ -216,7 +216,7 @@ namespace Server
                     {
                         PlayersCount++;
                     }
-                    
+                    //problem ze liczba graczy^ liczba gracz (bug w obliczaniu)
                 }
                 
             }
