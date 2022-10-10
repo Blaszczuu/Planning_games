@@ -1,24 +1,16 @@
-using DataTransferObjects;
-using Server;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using DataTransferObjects;
 using System.Net;
-using System.Net.Http.Headers;
 using System.Net.Sockets;
-using System.Reflection.Metadata.Ecma335;
-using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Text.Json;
-using static System.Net.Mime.MediaTypeNames;
 
 
 namespace Server
 {
     public class Program
     {
-        private static readonly Socket serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-        private static List<Client> connectedClients = new List<Client>();
+        private static readonly Socket serverSocket = new(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+        private static readonly List<Client> connectedClients = new();
         private const int BUFFER_SIZE = 2048;
         private const int PORT = 100;
         public static readonly byte[] buffer = new byte[BUFFER_SIZE];
@@ -79,7 +71,7 @@ namespace Server
             Console.WriteLine("Klient połączony, adres IP klienta: " + IPAddress);
             serverSocket.BeginAccept(AcceptCallback, null);
         }
-        public static void ReceiveCallback(IAsyncResult AR)//otrzymywanie mail i wysyłka tematu
+        public static void ReceiveCallback(IAsyncResult AR)//otrzymywanie state(state= rodzaj opreacji do wykonania), usuwanie rozłączonego socketa, pokazywanie adresu IP,
         {
             Socket current = (Socket)AR.AsyncState;
             int received;
@@ -118,6 +110,7 @@ namespace Server
             if (resultCard!.state == State.Cardsend)
             {
                 CardCommunication(resultCard);
+                ResultSend(0m);
             }
 
             var resultI = JsonSerializer.Deserialize<EstimatedIRequest>(text);
@@ -134,7 +127,7 @@ namespace Server
             current.BeginReceive(buffer, 0, BUFFER_SIZE, SocketFlags.None, ReceiveCallback, current);
         }
 
-        private static void EmailCheckCallBack(Socket current, LoginRequest? resultlogin)
+        private static void EmailCheckCallBack(Socket current, LoginRequest? resultlogin)// sprawdzanie loginu i wysyłanie odpowiedzi z rolą
         {
 
             if (resultlogin!.Email == "sebastian@abb.pl")
@@ -182,9 +175,8 @@ namespace Server
                 current.Send(data);
             }
         }
-        public static int PlayersCount = 0;
-        //public List<int> Playerlist = new List<int>();
-        private static void ProblemEstimation(EstimatedIRequest? resultI)
+        public static int PlayersCount;
+        private static void ProblemEstimation(EstimatedIRequest? resultI)//odbieranie id, wysyłanie do wszystkich, zliczanie do kogo wysłane
         {
             if (resultI!.ID != null)
             {
@@ -192,10 +184,10 @@ namespace Server
                 {
                     ID = resultI.ID,
                     Input = resultI.Input,
-                    state=State.Estiamtion,
+                    state = State.Estiamtion,
                 });
                 byte[] data = Encoding.ASCII.GetBytes(jsonResponse2);
-                
+
 
                 foreach (var socket in connectedClients.Select(c => c.Socket))
                 {
@@ -205,49 +197,47 @@ namespace Server
 
                     var userResult2 = connectedClients.Where(a => a.ClientRole == Role.Developer);
                     int ur = userResult2.Take(Range.All).ToArray().Length;
-                    PlayersCount = ur +ur1;
+                    PlayersCount = ur + ur1;
                 }
-                
+
             }
         }
-       
-        static readonly List<double> Resultlist = new();
-        private static void CardCommunication(CardPacksRequest resultCard)
+
+        public static readonly List<decimal> Resultlist = new();
+        public static void CardCommunication(CardPacksRequest resultCard)//dodawanie kart do listy
         {
             Resultlist.Add(resultCard.CardValue);
-            
+        }
+        public static decimal ResultSend(decimal closest)//obliczanie wyniku
+        {
             if (PlayersCount == Resultlist.Count)
             {
-                int r = Resultlist.Count;
-                int total = Resultlist.Sum(x => Convert.ToInt32(x));
-                r = total / Resultlist.Count; 
-                var fibo = new[] {89,55,34,21,13,8,5,3,2,1,0};
-                var input = r;
 
-                var diffList = from number in fibo
-                               select new
-                               {
-                                   number,
-                                   difference = Math.Abs(number - input)
-                               };                
-                var result = (from diffItem in diffList
-                              orderby diffItem.difference
-                              select diffItem).First().number;
-
-                var jsonResponse4 = JsonSerializer.Serialize<CardPacksResponse>(new CardPacksResponse()
-                {
-                   CardResult= result,
-                   state= State.Cardresult
-                });
-                byte[] data = Encoding.ASCII.GetBytes(jsonResponse4);
-                foreach (var socket in connectedClients.Select(c => c.Socket))
-                {
-                    socket.Send(data);
-                }
-                Resultlist.Clear();
-                PlayersCount=0;
-
+                decimal total = Resultlist.Sum(x => Convert.ToDecimal(x));
+                decimal r = total / Resultlist.Count;
+                var fibo = new[] { 0, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89 };
+                closest = Resultlist.Aggregate((x, y) => Math.Abs(x - r) < Math.Abs(y - r) ? x : y);
+                SendingResult(closest);
+                return closest;
             }
+            return 0;
+
+        }
+
+        private static void SendingResult(decimal closest)
+        {
+            var jsonResponse4 = JsonSerializer.Serialize<CardPacksResponse>(new CardPacksResponse()
+            {
+                CardResult = closest,
+                state = State.Cardresult
+            });
+            byte[] data = Encoding.ASCII.GetBytes(jsonResponse4);
+            foreach (var socket in connectedClients.Select(c => c.Socket))
+            {
+                socket.Send(data);
+            }
+            Resultlist.Clear();
+            PlayersCount = 0;
         }
     }
 }
