@@ -1,4 +1,4 @@
-﻿using DataTransferObjects;
+using DataTransferObjects;
 using Server;
 using System;
 using System.Collections.Generic;
