@@ -1,4 +1,4 @@
-﻿using DataTransferObjects;
+using DataTransferObjects;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -110,7 +110,8 @@ namespace Server
             if (resultCard!.state == State.Cardsend)
             {
                 CardCommunication(resultCard);
-                ResultSend(0m);
+                ResultSend();
+
             }
 
             var resultI = JsonSerializer.Deserialize<EstimatedIRequest>(text);
@@ -203,32 +204,31 @@ namespace Server
             }
         }
 
-        public static readonly List<decimal> Resultlist = new();
+        //public static readonly List<decimal> Resultlist = new();
+        public static List<int> votes = new List<int>();
         public static void CardCommunication(CardPacksRequest resultCard)//dodawanie kart do listy
         {
-            Resultlist.Add(resultCard.CardValue);
+            votes.Add(resultCard.CardValue);
+
         }
-        public static decimal ResultSend(decimal closest)//obliczanie wyniku
+        static int m;
+        public static void ResultSend()//obliczanie wyniku
         {
-            if (PlayersCount == Resultlist.Count)
+            if (PlayersCount == votes.Count)
             {
-
-                decimal total = Resultlist.Sum(x => Convert.ToDecimal(x));
-                decimal r = total / Resultlist.Count;
-                var fibo = new[] { 0, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89 };
-                closest = Resultlist.Aggregate((x, y) => Math.Abs(x - r) < Math.Abs(y - r) ? x : y);
-                SendingResult(closest);
-                return closest;
+                int result = Calculator.Calculate(votes);
+                m = result;
+                votes.Clear();
+                SendingResult();
             }
-            return 0;
 
         }
 
-        private static void SendingResult(decimal closest)
+        private static void SendingResult()
         {
             var jsonResponse4 = JsonSerializer.Serialize<CardPacksResponse>(new CardPacksResponse()
             {
-                CardResult = closest,
+                CardResult = m,
                 state = State.Cardresult
             });
             byte[] data = Encoding.ASCII.GetBytes(jsonResponse4);
@@ -236,7 +236,7 @@ namespace Server
             {
                 socket.Send(data);
             }
-            Resultlist.Clear();
+            votes.Clear();
             PlayersCount = 0;
         }
     }
