@@ -1,6 +1,8 @@
 using DataTransferObjects;
+using Server.Services;
 using System.Net;
 using System.Net.Sockets;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.Json;
 
@@ -15,8 +17,19 @@ namespace Server
         private const int PORT = 100;
         public static readonly byte[] buffer = new byte[BUFFER_SIZE];
 
+
+        private static IterationService iterationService;
         public static void Main()
         {
+            HttpClient client = new HttpClient();
+            client.BaseAddress = new Uri("");
+
+            iterationService = new IterationService(client);
+
+            var sprints = iterationService.GetSprintIterations().Result;
+
+
+
             Console.Title = "Server: " + Dns.GetHostEntry(Dns.GetHostName()).AddressList.First(a => a.AddressFamily == AddressFamily.InterNetwork);
             SetupServer();
             Console.ReadLine();
@@ -217,6 +230,7 @@ namespace Server
             if (PlayersCount == votes.Count)
             {
                 int result = Calculator.Calculate(votes);
+               
                 m = result;
                 votes.Clear();
                 SendingResult();
