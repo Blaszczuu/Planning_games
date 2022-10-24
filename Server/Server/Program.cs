@@ -1,6 +1,7 @@
 using DataTransferObjects;
 using Server.Services;
 using System.Net;
+using System.Net.Http.Headers;
 using System.Net.Sockets;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -18,15 +19,20 @@ namespace Server
         public static readonly byte[] buffer = new byte[BUFFER_SIZE];
 
 
-        private static IterationService iterationService;
+        private static IterationService ?iterationService;
         public static void Main()
         {
             HttpClient client = new HttpClient();
-            client.BaseAddress = new Uri("");
+            
+            client.DefaultRequestHeaders.Accept.Clear();
+            client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", "OnRvaHBzcXNycHlxcGV6b2xmeWNoYzdmNnpuaGZncnhzZmx2emVjM280aHdya2V0MnZleWE=");
 
             iterationService = new IterationService(client);
 
             var sprints = iterationService.GetSprintIterations().Result;
+            
+            
 
 
 
@@ -189,7 +195,7 @@ namespace Server
                 current.Send(data);
             }
         }
-        public static int PlayersCount;
+        static int PlayersCount;
         private static void ProblemEstimation(EstimatedIRequest? resultI)//odbieranie id, wysyłanie do wszystkich, zliczanie do kogo wysłane
         {
             if (resultI!.ID != null)
@@ -218,7 +224,7 @@ namespace Server
         }
 
         //public static readonly List<decimal> Resultlist = new();
-        public static List<int> votes = new List<int>();
+        static List<int> votes = new List<int>();
         public static void CardCommunication(CardPacksRequest resultCard)//dodawanie kart do listy
         {
             votes.Add(resultCard.CardValue);
