@@ -4,10 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Server.Services
+namespace Server.Dto
 {
-    class BasicAuth
+    public enum TimeFrame
     {
-       
+        Past, 
+        Current,
+        Future
     }
 }

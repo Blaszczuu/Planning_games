@@ -20,6 +20,7 @@ namespace Server
 
 
         private static IterationService ?iterationService;
+        private static WorkItemsService ?workitemsx;
         public static void Main()
         {
             HttpClient client = new HttpClient();
@@ -29,12 +30,14 @@ namespace Server
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", "OnRvaHBzcXNycHlxcGV6b2xmeWNoYzdmNnpuaGZncnhzZmx2emVjM280aHdya2V0MnZleWE=");
 
             iterationService = new IterationService(client);
+            workitemsx = new WorkItemsService(client);
 
             var sprints = iterationService.GetSprintIterations().Result;
-            
-            
-
-
+            //foreach (var iteration in iterations.value)
+            //{
+            //    Console.WriteLine($"Name {iteration.name} with id {iteration.id}");
+            //}
+            var witems = workitemsx.GetSprintwork().Result;
 
             Console.Title = "Server: " + Dns.GetHostEntry(Dns.GetHostName()).AddressList.First(a => a.AddressFamily == AddressFamily.InterNetwork);
             SetupServer();
