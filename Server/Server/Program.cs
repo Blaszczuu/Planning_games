@@ -21,6 +21,8 @@ namespace Server
 
         private static IterationService ?iterationService;
         private static WorkItemsService ?workitemsx;
+        private static TitleServices ?workTitles;
+
         public static void Main()
         {
             HttpClient client = new HttpClient();
@@ -31,13 +33,18 @@ namespace Server
 
             iterationService = new IterationService(client);
             workitemsx = new WorkItemsService(client);
+            workTitles = new TitleServices(client);
+
 
             var sprints = iterationService.GetSprintIterations().Result;
-            //foreach (var iteration in iterations.value)
-            //{
-            //    Console.WriteLine($"Name {iteration.name} with id {iteration.id}");
-            //}
-            var witems = workitemsx.GetSprintwork().Result;
+             
+
+            string sprintName = "Sprint 0";
+
+            var witems = workitemsx.GetSprintwork(sprints.First(s => s.Name == sprintName)).Result;
+            string witemsName = "5";
+
+            var wTitles = workTitles.GetSprintTitle(witems.First(x=> x.Id ==witemsName)).Result;
 
             Console.Title = "Server: " + Dns.GetHostEntry(Dns.GetHostName()).AddressList.First(a => a.AddressFamily == AddressFamily.InterNetwork);
             SetupServer();
