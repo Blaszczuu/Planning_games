@@ -7,8 +7,9 @@ namespace Server.Entities
 
             public int id { get; set; }
             public int rev { get; set; }
-            public Fields[] fields { get; set; }
-            public string url { get; set; }
+            public Fields fields { get; set; }
+            public _Links ?Links { get; set; }
+            public Uri url { get; set; }
         
 
     }

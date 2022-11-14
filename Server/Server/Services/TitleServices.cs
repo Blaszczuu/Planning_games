@@ -22,23 +22,22 @@ namespace Server.Services
         {
             this.httpClient = httpClient;
         }
-        public async Task<List<TitleToDto>> GetSprintTitle(WorkItemToDto workTitleuri)
+        public async Task<TitleToDto> GetSprintTitle(WorkItemToDto workTitleuri)
         {
             var wItem= new WorkItemToDto();
 
             var response = await this.httpClient.GetAsync(workTitleuri.Uri.ToString());
 
+            var content = await response.Content.ReadAsStringAsync();
             var workTitlesforid = JsonConvert.DeserializeObject<WorkTitle>(await response.Content.ReadAsStringAsync());//exception wywala 
 
-
-            return workTitlesforid.fields.Select(fields => this.MapTitleToDTO(fields)).ToList();
+            return this.MapTitleToDTO(workTitlesforid.fields);
         }
         private TitleToDto MapTitleToDTO(Fields fieldTitle)
         {
             TitleToDto titleItemDto = new TitleToDto();
             titleItemDto.SystemTitle =fieldTitle.SystemTitle;
             
-
             return titleItemDto;
         }
     }
