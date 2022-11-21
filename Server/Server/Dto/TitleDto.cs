@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 
 namespace Server.Dto
 {
-    public class TitleToDto
+    public class TitleDto
     {
+        public int Id { get; set; }
         public string SystemTitle { get; set; } 
     }
 }

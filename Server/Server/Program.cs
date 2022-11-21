@@ -1,4 +1,6 @@
 using DataTransferObjects;
+using Newtonsoft.Json;
+using Server.Dto;
 using Server.Services;
 using System.ComponentModel;
 using System.Net;
@@ -7,7 +9,7 @@ using System.Net.Sockets;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.Json;
-
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace Server
 {
@@ -23,39 +25,17 @@ namespace Server
         private static IterationService ?iterationService;
         private static WorkItemsService ?workitemsx;
         private static TitleServices ?workTitles;
-        public static List<string> ListOFItems;
+        private static List<TitleDto> workItems;
 
         public static void Main()
         {
-            RestApi_Sprints();
-
             Console.Title = "Server: " + Dns.GetHostEntry(Dns.GetHostName()).AddressList.First(a => a.AddressFamily == AddressFamily.InterNetwork);
             SetupServer();
             Console.ReadLine();
             CloseAllSockets();
         }
 
-        private static void RestApi_Sprints()
-        {
-            HttpClient client = new HttpClient();
-
-            client.DefaultRequestHeaders.Accept.Clear();
-            client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", "OnRvaHBzcXNycHlxcGV6b2xmeWNoYzdmNnpuaGZncnhzZmx2emVjM280aHdya2V0MnZleWE=");
-
-            iterationService = new IterationService(client);
-            workitemsx = new WorkItemsService(client);
-            workTitles = new TitleServices(client);
-
-            var sprints = iterationService.GetSprintIterations().Result;
-            //wysyłka wszystkich sprintów do scrumaster
-            string sprintName = "Sprint 0";
-            //scrum odsyła który sprint chce estymować
-            var witems = workitemsx.GetSprintwork(sprints.First(s => s.Name == sprintName)).Result;
-            string witemsName = "5";// do wywalenia, Wszystkie ID z title zostają dodane do listy  ID-> Title
-            var wTitles = workTitles.GetSprintTitle(witems.First(x => x.Id == witemsName)).Result;
-            // Id i tytuł problemów zostają dodane do listy i wysłane do ScrumMaster 
-        }
+        
 
         public static void SetupServer()//inicjacja serwera
         {
@@ -159,7 +139,56 @@ namespace Server
             {
                 EmailCheckCallBack(current, resultlogin);
             }
+            var resultsprint = JsonSerializer.Deserialize<SprintReq>(text);
+            if(resultsprint!.state == State.Sprint)
+            {
+                RestApi_Sprints(resultsprint);
+            }
+
             current.BeginReceive(buffer, 0, BUFFER_SIZE, SocketFlags.None, ReceiveCallback, current);
+
+        }
+        private static void RestApi_Sprints(SprintReq sprintname)
+        {
+            List<TitleDto> workItems = new List<TitleDto>();
+            HttpClient client = new HttpClient();
+
+            client.DefaultRequestHeaders.Accept.Clear();
+            client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", "OnRvaHBzcXNycHlxcGV6b2xmeWNoYzdmNnpuaGZncnhzZmx2emVjM280aHdya2V0MnZleWE=");
+
+            iterationService = new IterationService(client);
+            workitemsx = new WorkItemsService(client);
+            workTitles = new TitleServices(client);
+
+
+            var sprints = iterationService.GetSprintIterations().Result;
+            var sprintnamestr = sprintname.SprintName;
+            List<WorkItemDto> witems = workitemsx.GetSprintwork(sprints.First(s => s.Name == sprintnamestr)).Result;
+
+            foreach (var item in witems)
+            {
+                workItems.Add(workTitles.GetWorkItem(item).Result);
+            }
+            
+            foreach (var workItem in workItems)
+            {
+                Console.WriteLine($"(#{workItem.Id}) {workItem.SystemTitle} ");
+                var JsonSprintResponse = JsonSerializer.Serialize<SprintRes>(new SprintRes()
+                {
+                    SprintName = workItem.SystemTitle,
+                    Id = workItem.Id
+                });
+                
+                byte[] data = Encoding.ASCII.GetBytes(JsonSprintResponse);
+                foreach (var socket in connectedClients.Select(c => c.Socket))
+                {
+                    connectedClients.Where(a => a.ClientRole == Role.ScrumMaster);
+                    socket.Send(data);
+                }
+            }
+
+
         }
 
         private static void EmailCheckCallBack(Socket current, LoginRequest? resultlogin)// sprawdzanie loginu i wysyłanie odpowiedzi z rolą
@@ -238,12 +267,11 @@ namespace Server
             }
         }
 
-        //public static readonly List<decimal> Resultlist = new();
+        
         static List<int> votes = new List<int>();
         public static void CardCommunication(CardPacksRequest resultCard)//dodawanie kart do listy
         {
             votes.Add(resultCard.CardValue);
-
         }
         static int m;
         public static void ResultSend()//obliczanie wyniku

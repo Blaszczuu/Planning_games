@@ -6,5 +6,6 @@
         Estiamtion=4,
         Cardsend=5,
         Cardresult=6,
+        Sprint =7
     }
 }

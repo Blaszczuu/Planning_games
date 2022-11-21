@@ -23,7 +23,7 @@ namespace Server.Services
         {
             this.httpClient = httpClient;
         }
-        public async Task<List<WorkItemToDto>> GetSprintwork(SprintDto sprint)
+        public async Task<List<WorkItemDto>> GetSprintwork(SprintDto sprint)
         {
 
             var response = await this.httpClient.GetAsync(sprint.Uri.ToString() + "/workitems");
@@ -33,9 +33,9 @@ namespace Server.Services
 
             return workItemRelationsEntity.workItemRelations.Select(targetEntity => this.MaptToDTO(targetEntity)).ToList();
         }
-        private WorkItemToDto MaptToDTO(targetEntity targetd)
+        private WorkItemDto MaptToDTO(targetEntity targetd)
         {
-            WorkItemToDto workItemDto = new WorkItemToDto();
+            WorkItemDto workItemDto = new WorkItemDto();
             workItemDto.Id = targetd.target.ID;
             workItemDto.Uri = new Uri(targetd.target.Url);
 

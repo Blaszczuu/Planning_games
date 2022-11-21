@@ -6,9 +6,10 @@ using System.Threading.Tasks;
 
 namespace Server.Dto
 {
-    public class WorkItemToDto
+    public class WorkItemDto
     {
         public string Id { get; set; }
         public Uri Uri { get; set; }
     }
+    
 }
