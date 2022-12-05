@@ -8,8 +8,8 @@ namespace DataTransferObjects
 {
     public class SprintRes
     {
-        public string SprintName { get; set; }
         public int Id { get; set; }
-        public State state { get; set; }
+        public string SystemTitle { get; set; }
+        public List<string> SystemDescription { get; set; }
     }
 }

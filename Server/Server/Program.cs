@@ -10,6 +10,7 @@ using System.Runtime.CompilerServices;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Text.Json;
+using System.Threading.Tasks.Dataflow;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace Server
@@ -143,17 +144,18 @@ namespace Server
             var resultsprint = JsonSerializer.Deserialize<SprintReq>(text);
             if(resultsprint!.state == State.Sprint)
             {
-                RestApi_Sprints(current, resultsprint);
+                RestApi_Sprints(resultsprint);
             }
 
             current.BeginReceive(buffer, 0, BUFFER_SIZE, SocketFlags.None, ReceiveCallback, current);
 
         }
         
-        private static void RestApi_Sprints(Socket current, SprintReq sprintname)
+        private static void RestApi_Sprints(SprintReq sprintname)
         {
             List<TitleDto> workItems = new List<TitleDto>();
             HttpClient client = new HttpClient();
+            List<SprintRes> WorkItemsforjson= new List<SprintRes>();
 
             client.DefaultRequestHeaders.Accept.Clear();
             client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
@@ -172,23 +174,31 @@ namespace Server
             {
                 workItems.Add(workTitles.GetWorkItem(item).Result);
             }
+            var selectedlist = workItems.Where(workitem=> workitem.Id!= 0).ToList();
+            workItems=workItems.Except(selectedlist).ToList();
+            workItems.AddRange(selectedlist);
 
-            foreach (var workItem in workItems)
+            foreach (var workItem in selectedlist)
             {
-                
                 Console.WriteLine($"(#{workItem.Id}) {workItem.SystemTitle} ");
-
-                var JsonSprintResponse = JsonSerializer.Serialize<SprintRes>(new SprintRes()
-                {
-                    SprintName = workItem.SystemTitle,
-                    Id = workItem.Id,
-                });
-                var jsonlist = JsonSerializer.Serialize(JsonSprintResponse);
-                byte[] data = Encoding.ASCII.GetBytes(jsonlist);
-                connectedClients.Where(a => a.ClientRole == Role.ScrumMaster);
-                current.Send(data);
-
             }
+                //var JsonSprintResponse = JsonSerializer.Serialize<SprintRes>(new SprintRes()
+                //{
+                //    SystemTitle = workItem.SystemTitle,
+                //    Id = workItem.Id,
+                //});
+
+                var jsonlist = JsonSerializer.Serialize(selectedlist);
+                byte[] data = Encoding.ASCII.GetBytes(jsonlist);
+                foreach (var socket in connectedClients.Select(c => c.Socket))
+                {
+                    socket.Send(data);
+                }
+                
+            
+                
+            
+            
         }
        
 

@@ -24,7 +24,7 @@ namespace Client
         {
             int attempts = 0;
             Console.WriteLine("Podaj adres IP do którego chcesz się połączyć");
-            String ?host = Console.ReadLine();
+            String? host = Console.ReadLine();
 
             while (!ClientSocket.Connected)
             {
@@ -63,7 +63,7 @@ namespace Client
             }
             SendCardReq(card);
         }
-        
+
         private static void SendCardReq(int value)
         {
             CardPacksRequest CardRequest = new()
@@ -79,8 +79,8 @@ namespace Client
         public static void GetSprintName()
         {
             Console.WriteLine("Podaj nazwe sprintu");
-            string ?sprint = Console.ReadLine();
-            if(sprint == null)
+            string? sprint = Console.ReadLine();
+            if (sprint == null)
             {
                 throw new Exception();
             }
@@ -94,15 +94,15 @@ namespace Client
                 SprintName = sprint,
                 state = State.Sprint,
             };
-            string jsonSprint=JsonSerializer.Serialize(SprintReq);
+            string jsonSprint = JsonSerializer.Serialize(SprintReq);
             SendString(jsonSprint);
         }
         public static void SendI()
         {
             Console.WriteLine("Podaj ID Rozgrywki: ");
-            string ?ID = Console.ReadLine();
+            string? ID = Console.ReadLine();
             Console.WriteLine("Podaj Temat Rozgrywki: ");
-            string ?Txt = Console.ReadLine();
+            string? Txt = Console.ReadLine();
             SendIRequest(ID!, Txt!);
         }
         private static void SendIRequest(string IDProblem, string ProblemTxt)
@@ -120,7 +120,7 @@ namespace Client
         public static void SendMail()//wysyłanie
         {
             Console.Write("Wyślij do servera: ");
-            string ?email = Console.ReadLine();
+            string? email = Console.ReadLine();
             SendLoginRequest(email!);
         }
 
@@ -146,7 +146,7 @@ namespace Client
             byte[] buffer = Encoding.ASCII.GetBytes(text);
             ClientSocket.Send(buffer, 0, buffer.Length, SocketFlags.None);
         }
-        
+
         public static bool Receivemail()//mail
         {
             var buffer = new byte[2048];
@@ -198,7 +198,7 @@ namespace Client
             if (resultI!.ID != null)
             {
                 Console.Clear();
-                Console.WriteLine("ID Estymowanego tematu: "+resultI.ID +"\nEstymowany temat: "+ resultI.Input);
+                Console.WriteLine("ID Estymowanego tematu: " + resultI.ID + "\nEstymowany temat: " + resultI.Input);
 
                 return true;
             }
@@ -222,7 +222,7 @@ namespace Client
             if (receiveresult!.CardResult > -1)
             {
                 Console.WriteLine("Wynik głosowania: " + receiveresult.CardResult);
-            }  
+            }
             return true;
         }
         public static bool ReceiveSprintDetails()
@@ -238,14 +238,18 @@ namespace Client
             Array.Copy(buffer, data, received);
             string text = Encoding.ASCII.GetString(data);
 
-            var receiveSprint = JsonSerializer.Deserialize<SprintRes>(text);
-            if (receiveSprint!.SprintName != null)
-            {
-                Console.WriteLine(receiveSprint.Id +" "+ receiveSprint.SprintName);
-            }
-            
-            return true;
+            var receivedSprints = JsonSerializer.Deserialize<List<SprintRes>>(text);
 
+            foreach (var item in receivedSprints)
+            {
+                if (item!.SystemTitle != null)
+                {
+                    Console.WriteLine(item.Id + " " + item.SystemTitle);
+                }
+            }
+
+
+            return true;
         }
     }
 }
