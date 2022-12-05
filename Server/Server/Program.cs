@@ -7,6 +7,7 @@ using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Sockets;
 using System.Runtime.CompilerServices;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Text.Json;
 using JsonSerializer = System.Text.Json.JsonSerializer;
@@ -142,13 +143,14 @@ namespace Server
             var resultsprint = JsonSerializer.Deserialize<SprintReq>(text);
             if(resultsprint!.state == State.Sprint)
             {
-                RestApi_Sprints(resultsprint);
+                RestApi_Sprints(current, resultsprint);
             }
 
             current.BeginReceive(buffer, 0, BUFFER_SIZE, SocketFlags.None, ReceiveCallback, current);
 
         }
-        private static void RestApi_Sprints(SprintReq sprintname)
+        
+        private static void RestApi_Sprints(Socket current, SprintReq sprintname)
         {
             List<TitleDto> workItems = new List<TitleDto>();
             HttpClient client = new HttpClient();
@@ -165,31 +167,30 @@ namespace Server
             var sprints = iterationService.GetSprintIterations().Result;
             var sprintnamestr = sprintname.SprintName;
             List<WorkItemDto> witems = workitemsx.GetSprintwork(sprints.First(s => s.Name == sprintnamestr)).Result;
-
+            int witemscount = witems.Count;
             foreach (var item in witems)
             {
                 workItems.Add(workTitles.GetWorkItem(item).Result);
             }
-            
+
             foreach (var workItem in workItems)
             {
+                
                 Console.WriteLine($"(#{workItem.Id}) {workItem.SystemTitle} ");
+
                 var JsonSprintResponse = JsonSerializer.Serialize<SprintRes>(new SprintRes()
                 {
                     SprintName = workItem.SystemTitle,
-                    Id = workItem.Id
+                    Id = workItem.Id,
                 });
-                
-                byte[] data = Encoding.ASCII.GetBytes(JsonSprintResponse);
-                foreach (var socket in connectedClients.Select(c => c.Socket))
-                {
-                    connectedClients.Where(a => a.ClientRole == Role.ScrumMaster);
-                    socket.Send(data);
-                }
+                var jsonlist = JsonSerializer.Serialize(JsonSprintResponse);
+                byte[] data = Encoding.ASCII.GetBytes(jsonlist);
+                connectedClients.Where(a => a.ClientRole == Role.ScrumMaster);
+                current.Send(data);
+
             }
-
-
         }
+       
 
         private static void EmailCheckCallBack(Socket current, LoginRequest? resultlogin)// sprawdzanie loginu i wysyłanie odpowiedzi z rolą
         {

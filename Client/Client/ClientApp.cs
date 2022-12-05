@@ -3,6 +3,7 @@ using System.Text;
 using System.ComponentModel.DataAnnotations;
 using DataTransferObjects;
 using System.Text.Json;
+using System.Globalization;
 
 namespace Client
 {
@@ -62,6 +63,7 @@ namespace Client
             }
             SendCardReq(card);
         }
+        
         private static void SendCardReq(int value)
         {
             CardPacksRequest CardRequest = new()
@@ -74,6 +76,27 @@ namespace Client
             SendInt(json);
 
         }
+        public static void GetSprintName()
+        {
+            Console.WriteLine("Podaj nazwe sprintu");
+            string ?sprint = Console.ReadLine();
+            if(sprint == null)
+            {
+                throw new Exception();
+            }
+            SendSprintReq(sprint);
+
+        }
+        private static void SendSprintReq(string sprint)
+        {
+            SprintReq SprintReq = new()
+            {
+                SprintName = sprint,
+                state = State.Sprint,
+            };
+            string jsonSprint=JsonSerializer.Serialize(SprintReq);
+            SendString(jsonSprint);
+        }
         public static void SendI()
         {
             Console.WriteLine("Podaj ID Rozgrywki: ");
@@ -82,7 +105,7 @@ namespace Client
             string ?Txt = Console.ReadLine();
             SendIRequest(ID!, Txt!);
         }
-        public static void SendIRequest(string IDProblem, string ProblemTxt)
+        private static void SendIRequest(string IDProblem, string ProblemTxt)
         {
             EstimatedIRequest EstimatedIRequest = new()
             {
@@ -201,6 +224,28 @@ namespace Client
                 Console.WriteLine("Wynik głosowania: " + receiveresult.CardResult);
             }  
             return true;
+        }
+        public static bool ReceiveSprintDetails()
+        {
+            var buffer = new byte[2048];
+            int received = 0;
+            if (ClientSocket.Available > 0)
+            {
+                received = ClientSocket.Receive(buffer, SocketFlags.None);
+            }
+            if (received == 0) return false;
+            var data = new byte[received];
+            Array.Copy(buffer, data, received);
+            string text = Encoding.ASCII.GetString(data);
+
+            var receiveSprint = JsonSerializer.Deserialize<SprintRes>(text);
+            if (receiveSprint!.SprintName != null)
+            {
+                Console.WriteLine(receiveSprint.Id +" "+ receiveSprint.SprintName);
+            }
+            
+            return true;
+
         }
     }
 }
