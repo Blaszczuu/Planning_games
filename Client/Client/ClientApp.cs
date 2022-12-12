@@ -12,7 +12,8 @@ namespace Client
         private static readonly Socket ClientSocket = new(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
         private const int PORT = 100;
-        private static List<SprintRes> sprintRes = new List<SprintRes>();
+        private static List<int> sprintid = new List<int>();
+        private static List<string> sprinttitle = new List<string>();
 
         static void Main()
         {
@@ -100,14 +101,20 @@ namespace Client
         }
         public static void SendI()
         {
-            Console.WriteLine("Podaj ID Rozgrywki: ");
-            int? ID = sprintRes[0].Id;
-            string IDstring = ID.ToString();
-            Console.WriteLine("Podaj Temat Rozgrywki: ");
-            string? Txt = sprintRes[0].SystemTitle;
-            SendIRequest(IDstring!, Txt!);
+            
+            int scount = sprintid.Count;
+            for (int i = 0; i < scount; i++)
+            {
+                int? ID = sprintid[i];
+                string IDstring = ID.ToString();
+                string? Txt = sprinttitle[i];
+                
+                SendIRequest(IDstring!, Txt!);
+                Thread.Sleep(100);
+                
+            }
         }
-        
+
         private static void SendIRequest(string IDProblem, string ProblemTxt)
         {
             EstimatedIRequest EstimatedIRequest = new()
@@ -205,7 +212,7 @@ namespace Client
 
                 return true;
             }
-
+            
             return false;
         }
         public static bool ReceiveResult()
@@ -241,12 +248,14 @@ namespace Client
             var data = new byte[received];
             Array.Copy(buffer, data, received);
             string text = Encoding.ASCII.GetString(data);
-            //List<SprintRes> sprintRes = new List<SprintRes>();
 
             var receivedSprints = JsonSerializer.Deserialize<List<SprintRes>>(text);
             
+
             foreach (var item in receivedSprints)
             {
+                sprintid.Add(item.Id);
+                sprinttitle.Add(item.SystemTitle);
                 if (item!.SystemTitle != null)
                 {
                     Console.WriteLine(item.Id + " " + item.SystemTitle);

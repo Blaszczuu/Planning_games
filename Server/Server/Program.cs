@@ -263,7 +263,6 @@ namespace Server
 
             }
         }
-
         static List<int> votes = new List<int>();
         public static void CardCommunication(CardPacksRequest resultCard)//dodawanie kart do listy
         {
