@@ -21,6 +21,7 @@ namespace Client
             {
                 case "1":
                     Console.Clear();
+                    ScrumApiMenu.ApiSender();
                     ClientApp.SendI();
                     GameInstance.ScrumMenu();
                     break;

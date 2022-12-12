@@ -178,26 +178,12 @@ namespace Server
             workItems=workItems.Except(selectedlist).ToList();
             workItems.AddRange(selectedlist);
 
-            foreach (var workItem in selectedlist)
-            {
-                Console.WriteLine($"(#{workItem.Id}) {workItem.SystemTitle} ");
-            }
-                //var JsonSprintResponse = JsonSerializer.Serialize<SprintRes>(new SprintRes()
-                //{
-                //    SystemTitle = workItem.SystemTitle,
-                //    Id = workItem.Id,
-                //});
-
                 var jsonlist = JsonSerializer.Serialize(selectedlist);
                 byte[] data = Encoding.ASCII.GetBytes(jsonlist);
                 foreach (var socket in connectedClients.Select(c => c.Socket))
                 {
                     socket.Send(data);
                 }
-                
-            
-                
-            
             
         }
        
@@ -278,7 +264,6 @@ namespace Server
             }
         }
 
-        
         static List<int> votes = new List<int>();
         public static void CardCommunication(CardPacksRequest resultCard)//dodawanie kart do listy
         {

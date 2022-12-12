@@ -17,7 +17,7 @@ namespace Client
             {
             }
             Console.WriteLine("Pobieranie danych zakonczone");
-            Console.ReadKey();
+            
         }
     }
 }

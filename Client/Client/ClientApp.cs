@@ -12,6 +12,7 @@ namespace Client
         private static readonly Socket ClientSocket = new(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
         private const int PORT = 100;
+        private static List<SprintRes> sprintRes = new List<SprintRes>();
 
         static void Main()
         {
@@ -100,11 +101,13 @@ namespace Client
         public static void SendI()
         {
             Console.WriteLine("Podaj ID Rozgrywki: ");
-            string? ID = Console.ReadLine();
+            int? ID = sprintRes[0].Id;
+            string IDstring = ID.ToString();
             Console.WriteLine("Podaj Temat Rozgrywki: ");
-            string? Txt = Console.ReadLine();
-            SendIRequest(ID!, Txt!);
+            string? Txt = sprintRes[0].SystemTitle;
+            SendIRequest(IDstring!, Txt!);
         }
+        
         private static void SendIRequest(string IDProblem, string ProblemTxt)
         {
             EstimatedIRequest EstimatedIRequest = new()
@@ -225,6 +228,7 @@ namespace Client
             }
             return true;
         }
+        
         public static bool ReceiveSprintDetails()
         {
             var buffer = new byte[2048];
@@ -237,9 +241,10 @@ namespace Client
             var data = new byte[received];
             Array.Copy(buffer, data, received);
             string text = Encoding.ASCII.GetString(data);
+            //List<SprintRes> sprintRes = new List<SprintRes>();
 
             var receivedSprints = JsonSerializer.Deserialize<List<SprintRes>>(text);
-
+            
             foreach (var item in receivedSprints)
             {
                 if (item!.SystemTitle != null)
@@ -247,8 +252,6 @@ namespace Client
                     Console.WriteLine(item.Id + " " + item.SystemTitle);
                 }
             }
-
-
             return true;
         }
     }

@@ -27,7 +27,6 @@ namespace Client
             Console.WriteLine("Wybierz opcje:");
             Console.WriteLine("1) Rozpocznij grę");
             Console.WriteLine("2) Wybierz talie");
-            Console.WriteLine("3) Wybierz sprint z którego pobrać dane");
             Console.Write("\r\nWybierz opcje: ");
 
             switch (Console.ReadLine())
@@ -40,11 +39,6 @@ namespace Client
                     Console.Clear();
                     Talia.Talie();
                     Console.ReadKey();
-                    break;
-                case "3":
-                    Console.Clear();
-                    ScrumApiMenu.ApiSender();
-                    Console.Clear();
                     break;
             }
         }
