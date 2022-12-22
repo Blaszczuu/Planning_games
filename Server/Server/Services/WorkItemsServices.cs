@@ -16,23 +16,22 @@ namespace Server.Services
 
     public class WorkItemsService
     {
-
         private readonly HttpClient httpClient;
 
         public WorkItemsService(HttpClient httpClient)
         {
             this.httpClient = httpClient;
         }
-        public async Task<List<WorkItemDto>> GetSprintwork(SprintDto sprint)
+
+        public async Task<List<WorkItemDto>> GetSprintItems(SprintDto sprint)
         {
-
             var response = await this.httpClient.GetAsync(sprint.Uri.ToString() + "/workitems");
-
+ response.StatusCode
             var workItemRelationsEntity = JsonConvert.DeserializeObject<WorkItemRelationsEntity>(await response.Content.ReadAsStringAsync());
-
-
-            return workItemRelationsEntity.workItemRelations.Select(targetEntity => this.MaptToDTO(targetEntity)).ToList();
+                
+            return workItemRelationsEntity!.workItemRelations.Select(targetEntity => this.MaptToDTO(targetEntity)).ToList();
         }
+
         private WorkItemDto MaptToDTO(targetEntity targetd)
         {
             WorkItemDto workItemDto = new WorkItemDto();

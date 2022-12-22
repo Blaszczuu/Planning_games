@@ -141,17 +141,18 @@ namespace Server
             {
                 EmailCheckCallBack(current, resultlogin);
             }
+
             var resultsprint = JsonSerializer.Deserialize<SprintReq>(text);
-            if(resultsprint!.state == State.Sprint)
+            if (resultsprint!.state == State.Sprint)
             {
-                RestApi_Sprints(resultsprint);
+                RestApi_Sprints(current, resultsprint);
             }
 
             current.BeginReceive(buffer, 0, BUFFER_SIZE, SocketFlags.None, ReceiveCallback, current);
 
         }
         
-        private static void RestApi_Sprints(SprintReq sprintname)
+        private static void RestApi_Sprints(Socket current, SprintReq sprintName)
         {
             List<TitleDto> workItems = new List<TitleDto>();
             HttpClient client = new HttpClient();
@@ -167,8 +168,16 @@ namespace Server
 
 
             var sprints = iterationService.GetSprintIterations().Result;
-            var sprintnamestr = sprintname.SprintName;
-            List<WorkItemDto> witems = workitemsx.GetSprintwork(sprints.First(s => s.Name == sprintnamestr)).Result;
+            //FirstorDefault zwroci null ktory mozna obsluzyc
+            List<WorkItemDto> witems = new List<WorkItemDto>();
+            var paramter = sprints.FirstOrDefault(s => s.Name == sprintName.SprintName);
+            if (paramter != null)
+            {
+                witems = workitemsx.GetSprintItems(paramter).Result;
+            }
+
+
+
             int witemscount = witems.Count;
             foreach (var item in witems)
             {
@@ -180,9 +189,9 @@ namespace Server
 
                 var jsonlist = JsonSerializer.Serialize(selectedlist);
                 byte[] data = Encoding.ASCII.GetBytes(jsonlist);
-                foreach (var socket in connectedClients.Select(c => c.Socket))
+                foreach (var socket in connectedClients.Select(c => c.ClientRole == Role.ScrumMaster))
                 {
-                    socket.Send(data);
+                    current.Send(data);
                 }
             
         }

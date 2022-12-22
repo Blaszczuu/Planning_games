@@ -110,9 +110,17 @@ namespace Client
                 string? Txt = sprinttitle[i];
                 
                 SendIRequest(IDstring!, Txt!);
-                Thread.Sleep(100);
-                
+                while (!ClientApp.ReceiveID())
+                {
+                }
+                ClientApp.SendCard();
+                while (!ClientApp.ReceiveResult())
+                {
+                }
+                Console.ReadLine();
+                Thread.Sleep(100); 
             }
+            sprintid.Clear();
         }
 
         private static void SendIRequest(string IDProblem, string ProblemTxt)
